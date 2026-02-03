@@ -1,3 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+/* Matches Backend "ZOOM" - 1.1x to 1.4x */
+@keyframes intense-zoom {
+  0% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1.4);
+  }
+}
+
+/* Matches Backend "ORBITAL" - Circular motion at 1.2x scale */
+/* Simulating approx 9% movement range (100px on 1080px) */
+@keyframes intense-orbital {
+  0% {
+    transform: scale(1.2) translate(0%, -5%);
+  }
+
+  25% {
+    transform: scale(1.2) translate(5%, 0%);
+  }
+
+  50% {
+    transform: scale(1.2) translate(0%, 5%);
+  }
+
+  75% {
+    transform: scale(1.2) translate(-5%, 0%);
+  }
+
+  100% {
+    transform: scale(1.2) translate(0%, -5%);
+  }
+}
+
+.animate-intense-zoom {
+  animation: intense-zoom 10s ease-in-out forwards;
+  /* 10s covers typical segment length */
+}
+
+.animate-intense-orbital {
+  animation: intense-orbital 15s linear infinite;
+  /* Loop it for smoothness */
+}
+
+.font-permanent-marker {
+  font-family: 'Permanent Marker', cursive;
+}

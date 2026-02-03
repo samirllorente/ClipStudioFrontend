@@ -33,6 +33,20 @@ export class ScriptInputComponent {
     processingStatus = signal<'input' | 'processing' | 'preview' | 'generating' | 'completed'>('input');
     projectData = signal<any>(null);
 
+    // Preview Player State
+    isPlaying = signal(false);
+    currentTime = signal(0);
+    previewAudioElement: HTMLAudioElement | null = null;
+    activeImage = signal<string | null>(null);
+    activeSubtitle = signal<string>('');
+
+    // Transitions & Effects
+    previousImage = signal<string | null>(null);
+    currentEffect = signal<string>('animate-intense-zoom');
+    isTransitioning = signal(false);
+    lastSegmentIndex = -1;
+    segmentEffects: string[] = [];
+
     get scriptControl() {
         return this.scriptForm.get('script')!;
     }
@@ -93,8 +107,22 @@ export class ScriptInputComponent {
 
     loadProjectPreview(projectId: string) {
         this.videoService.getProject(projectId).subscribe(project => {
+            if (project) {
+                // Pre-calculate URL for audio?
+                // Ensure audioPath is absolute, we need to convert to relative for static serving
+            }
             this.projectData.set(project);
             this.processingStatus.set('preview');
+
+            // Init effects map
+            this.segmentEffects = project.segments.map(() => Math.random() > 0.5 ? 'animate-intense-zoom' : 'animate-intense-orbital');
+
+            // Init active image
+            if (project.segments.length > 0) {
+                this.activeImage.set(this.getImageUrl(project.segments[0].imagePath));
+                this.currentEffect.set(this.segmentEffects[0]);
+                this.lastSegmentIndex = 0;
+            }
         });
     }
 
@@ -140,6 +168,77 @@ export class ScriptInputComponent {
         if (!imagePath) return '';
         const filename = imagePath.split('/').pop();
         return `${environment.apiUrl}/projects/${this.projectId()}/${filename}?t=${new Date().getTime()}`;
+    }
+
+    getAudioUrl(): string {
+        const path = this.projectData()?.audioPath;
+        if (!path) return '';
+        // If served statically like images
+        const filename = path.split('/').pop();
+        return `${environment.apiUrl}/projects/${this.projectId()}/${filename}`;
+    }
+
+    togglePlay() {
+        if (!this.previewAudioElement) {
+            this.previewAudioElement = new Audio(this.getAudioUrl());
+            this.previewAudioElement.addEventListener('timeupdate', () => {
+                this.currentTime.set(this.previewAudioElement!.currentTime);
+                this.updatePreviewState();
+            });
+            this.previewAudioElement.addEventListener('ended', () => {
+                this.isPlaying.set(false);
+                this.currentTime.set(0);
+            });
+        }
+
+        if (this.isPlaying()) {
+            this.previewAudioElement.pause();
+            this.isPlaying.set(false);
+        } else {
+            this.previewAudioElement.play();
+            this.isPlaying.set(true);
+        }
+    }
+
+    updatePreviewState() {
+        const time = this.currentTime();
+        const project = this.projectData();
+        if (!project) return;
+
+        // Find active segment/image
+        const totalSegments = project.segments.length;
+        const durationPerSegment = (project.audioDuration || 15) / totalSegments;
+        const currentSegmentIndex = Math.min(Math.floor(time / durationPerSegment), totalSegments - 1);
+
+        // Transition Logic
+        if (currentSegmentIndex !== this.lastSegmentIndex) {
+            const newImage = this.getImageUrl(project.segments[currentSegmentIndex]?.imagePath);
+
+            if (this.lastSegmentIndex !== -1 && this.activeImage()) {
+                // Start transition
+                this.previousImage.set(this.activeImage());
+                this.isTransitioning.set(true);
+
+                // Clear transition after 1s (match CSS duration)
+                setTimeout(() => {
+                    this.isTransitioning.set(false);
+                    this.previousImage.set(null);
+                }, 1000);
+            }
+
+            this.activeImage.set(newImage);
+
+            // Set effect for this segment
+            if (this.segmentEffects[currentSegmentIndex]) {
+                this.currentEffect.set(this.segmentEffects[currentSegmentIndex]);
+            }
+
+            this.lastSegmentIndex = currentSegmentIndex;
+        }
+
+        // Find active subtitle
+        const sub = project.subtitles.find((s: any) => time >= s.start && time <= s.end);
+        this.activeSubtitle.set(sub ? sub.text : '');
     }
 
     getSegmentSubtitles(segmentIndex: number): any[] {
