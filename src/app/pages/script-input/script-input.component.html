@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#0f172a] text-white font-['Outfit'] flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl">
+    <div class="w-full max-w-5xl">
         <!-- Header -->
         <div class="mb-8 text-center">
             <h1
@@ -184,7 +184,7 @@
                     <div
                         class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row gap-6">
                         <!-- Image Column -->
-                        <div class="w-full md:w-1/3 flex flex-col gap-4">
+                        <div class="w-full md:w-2/5 flex flex-col gap-4">
                             <div
                                 class="relative aspect-[9/16] bg-black/50 rounded-xl overflow-hidden border border-slate-700">
                                 <img [src]="getImageUrl(segment.imagePath)" class="w-full h-full object-cover">
@@ -214,7 +214,7 @@
                         </div>
 
                         <!-- Subtitles Column -->
-                        <div class="w-full md:w-2/3 flex flex-col gap-4">
+                        <div class="w-full md:w-3/5 flex flex-col gap-4">
                             <h3 class="text-lg font-semibold text-white">Subtitles</h3>
                             <div class="grid grid-cols-1 gap-1">
                                 @for (sub of getSegmentSubtitles(i); track $index) {
