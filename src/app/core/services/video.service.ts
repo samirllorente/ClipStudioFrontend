@@ -31,6 +31,12 @@ export class VideoService {
         return this.http.put<any>(`${this.projectsUrl}/${id}/subtitles`, { subtitles });
     }
 
+    uploadImage(projectId: string, segmentIndex: number, file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<any>(`${this.projectsUrl}/${projectId}/segment/${segmentIndex}/image-upload`, formData);
+    }
+
     renderVideo(id: string, options?: any): Observable<any> {
         return this.http.post<any>(`${this.projectsUrl}/${id}/render`, options || {});
     }

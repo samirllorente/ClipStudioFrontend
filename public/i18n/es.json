@@ -17,5 +17,7 @@
     "REGENERATE_IMAGE": "Regenerar Imagen",
     "GENERATING_FINAL": "Generando Video Final...",
     "SUBTITLE_SETTINGS": "Apariencia de Subtítulos",
-    "TEXT_COLOR": "Color de Texto"
+    "TEXT_COLOR": "Color de Texto",
+    "UPLOAD_IMAGE": "Subir Imagen",
+    "DOWNLOAD_VIDEO": "Descargar Video"
 }

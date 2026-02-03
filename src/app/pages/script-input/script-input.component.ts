@@ -145,6 +145,32 @@ export class ScriptInputComponent {
         });
     }
 
+    onFileSelected(event: any, segmentIndex: number) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const id = this.projectId();
+        if (!id) return;
+
+        this.videoService.uploadImage(id, segmentIndex, file).subscribe((updatedProject) => {
+            if (updatedProject) {
+                this.projectData.set(updatedProject);
+
+                // If this is the active segment in preview, update activeImage
+                // Calculate current segment index based on time?
+                // Or just force update if we know we are previewing *something*
+                // Better: check if we are currently looking at this segment
+                const duration = (updatedProject.audioDuration || 15);
+                const segDuration = duration / updatedProject.segments.length;
+                const currentIdx = Math.floor(this.currentTime() / segDuration);
+
+                if (currentIdx === segmentIndex) {
+                    this.activeImage.set(this.getImageUrl(updatedProject.segments[segmentIndex].imagePath));
+                }
+            }
+        });
+    }
+
     updateSubtitle(segmentIndex: number, subIndex: number, newText: string) {
         // This is complex because we need to know WHICH subtitle belongs to this segment
         // For now, let's assume we update the local state and send ALL subtitles to backend on change or finalize
