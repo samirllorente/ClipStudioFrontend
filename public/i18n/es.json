@@ -8,5 +8,8 @@
     "PROCESSING": "Procesando...",
     "GENERATE_BUTTON": "Generar Video",
     "ERROR_SERVER_CONNECT": "Error al conectar con el servidor. Por favor inténtalo de nuevo más tarde.",
-    "VIDEO_STARTED": "¡Generación de video iniciada! ID: "
+    "VIDEO_STARTED": "¡Generación de video iniciada! ID: ",
+    "WAITING_MSG": "Esto puede tardar unos minutos.",
+    "BACK_BUTTON": "Volver al inicio",
+    "VIDEO_GENERATION_FAILED": "La generación del video falló. Por favor inténtalo de nuevo."
 }
