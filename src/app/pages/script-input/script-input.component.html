@@ -69,6 +69,112 @@
                 <p class="text-xl text-slate-300">{{ 'PROCESSING' | translate }}...</p>
                 <p class="text-sm text-slate-500 mt-2">{{ 'WAITING_MSG' | translate }}</p>
             </div>
+            } @else if (processingStatus() === 'preview') {
+            <div class="w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">{{ 'PREVIEW_TITLE' | translate }}</h2>
+                    <button (click)="finalizeVideo()"
+                        class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-lg text-white font-bold hover:scale-105 transition-all">
+                        {{ 'FINALIZE_VIDEO' | translate }}
+                    </button>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Subtitle Settings -->
+                    <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50">
+                        <h3 class="text-lg font-semibold text-white mb-4">{{ 'SUBTITLE_SETTINGS' | translate }}</h3>
+                        <div class="flex flex-wrap items-center gap-6">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-xs text-slate-400 uppercase font-bold">{{ 'TEXT_COLOR' | translate
+                                    }}</label>
+                                <div class="flex items-center gap-3">
+                                    <!-- Presets -->
+                                    <button (click)="setSubtitleColor('#FFFFFF')"
+                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-white"
+                                        [class.ring-2]="subtitleColor() === '#FFFFFF'"
+                                        [class.ring-indigo-500]="subtitleColor() === '#FFFFFF'"></button>
+                                    <button (click)="setSubtitleColor('#F4D03F')"
+                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#F4D03F]"
+                                        [class.ring-2]="subtitleColor() === '#F4D03F'"
+                                        [class.ring-indigo-500]="subtitleColor() === '#F4D03F'"></button>
+                                    <button (click)="setSubtitleColor('#2ECC71')"
+                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#2ECC71]"
+                                        [class.ring-2]="subtitleColor() === '#2ECC71'"
+                                        [class.ring-indigo-500]="subtitleColor() === '#2ECC71'"></button>
+                                    <button (click)="setSubtitleColor('#3498DB')"
+                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#3498DB]"
+                                        [class.ring-2]="subtitleColor() === '#3498DB'"
+                                        [class.ring-indigo-500]="subtitleColor() === '#3498DB'"></button>
+                                    <button (click)="setSubtitleColor('#E74C3C')"
+                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#E74C3C]"
+                                        [class.ring-2]="subtitleColor() === '#E74C3C'"
+                                        [class.ring-indigo-500]="subtitleColor() === '#E74C3C'"></button>
+
+                                    <!-- Custom Hex -->
+                                    <div
+                                        class="relative ml-4 flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
+                                        <span class="text-slate-400 pl-2">#</span>
+                                        <input type="text" [ngModel]="subtitleColor().replace('#','')"
+                                            (ngModelChange)="setSubtitleColor('#' + $event)"
+                                            class="w-20 bg-transparent text-white p-1 outline-none uppercase font-mono"
+                                            maxlength="6">
+                                        <input type="color" [ngModel]="subtitleColor()"
+                                            (ngModelChange)="setSubtitleColor($event)"
+                                            class="w-8 h-8 rounded cursor-pointer border-0 p-0 ml-2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @for (segment of projectData().segments; track segment.id; let i = $index) {
+                    <div
+                        class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row gap-6">
+                        <!-- Image Column -->
+                        <div class="w-full md:w-1/3 flex flex-col gap-4">
+                            <div
+                                class="relative aspect-[9/16] bg-black/50 rounded-xl overflow-hidden border border-slate-700">
+                                <img [src]="getImageUrl(segment.imagePath)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-xs text-slate-400 uppercase tracking-wider font-bold">PROMPT</label>
+                                <textarea rows="3" [(ngModel)]="segment.prompt" [ngModelOptions]="{standalone: true}"
+                                    class="w-full bg-slate-800 rounded-lg p-3 text-sm text-slate-200 border border-slate-700 focus:border-indigo-500 outline-none resize-none"></textarea>
+                                <button (click)="regenerateImage(i, segment.prompt)"
+                                    class="text-xs bg-slate-700 hover:bg-slate-600 py-2 rounded text-white transition-colors">
+                                    {{ 'REGENERATE_IMAGE' | translate }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Subtitles Column -->
+                        <div class="w-full md:w-2/3 flex flex-col gap-4">
+                            <h3 class="text-lg font-semibold text-white">Subtitles</h3>
+                            <div class="grid grid-cols-1 gap-1">
+                                @for (sub of getSegmentSubtitles(i); track $index) {
+                                <div
+                                    class="flex gap-4 items-center p-2 rounded hover:bg-slate-800/50 transition-colors group">
+                                    <span class="text-xs font-mono text-slate-500 w-16 text-right select-none">
+                                        {{ (sub.start | number:'1.2-2') }}s
+                                    </span>
+                                    <!-- Clean input without borders, looking like text -->
+                                    <input type="text" [value]="sub.text" (change)="onSubtitleChange(sub, $event)"
+                                        [style.color]="subtitleColor()"
+                                        class="flex-1 bg-transparent text-lg font-medium outline-none border-none focus:ring-0 placeholder-slate-600">
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            } @else if (processingStatus() === 'generating') {
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-500 mb-4"></div>
+                <p class="text-xl text-slate-300">{{ 'GENERATING_FINAL' | translate }}...</p>
+                <p class="text-sm text-slate-500 mt-2">{{ 'WAITING_MSG' | translate }}</p>
+            </div>
             } @else if (processingStatus() === 'completed') {
             <div class="flex flex-col items-center w-full">
                 <!-- Use ngIf just in case videoUrl is null for some reason -->
@@ -86,4 +192,3 @@
             }
         </div>
     </div>
-</div>

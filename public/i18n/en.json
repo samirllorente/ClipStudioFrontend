@@ -11,5 +11,11 @@
     "VIDEO_STARTED": "Video generation started! ID: ",
     "WAITING_MSG": "This may take a few minutes.",
     "BACK_BUTTON": "Back to Input",
-    "VIDEO_GENERATION_FAILED": "Video generation failed. Please try again."
+    "VIDEO_GENERATION_FAILED": "Video generation failed. Please try again.",
+    "PREVIEW_TITLE": "Video Preview Editor",
+    "FINALIZE_VIDEO": "Generate Final Video",
+    "REGENERATE_IMAGE": "Regenerate Image",
+    "GENERATING_FINAL": "Generating Final Video...",
+    "SUBTITLE_SETTINGS": "Subtitle Appearance",
+    "TEXT_COLOR": "Text Color"
 }
