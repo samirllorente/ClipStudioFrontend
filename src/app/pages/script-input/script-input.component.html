@@ -12,64 +12,20 @@
         <!-- Main Card -->
         <div class="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 md:p-8 shadow-2xl">
             @if (processingStatus() === 'input') {
-            <form [formGroup]="scriptForm" (ngSubmit)="onSubmit()">
-                <div class="mb-6">
-                    <label for="script" class="block text-sm font-medium text-slate-300 mb-2">
-                        {{ 'VIDEO_SCRIPT_LABEL' | translate }}
-                    </label>
-                    <div class="relative group">
-                        <div
-                            class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl opacity-20 group-hover:opacity-40 transition duration-500 blur">
-                        </div>
-                        <textarea id="script" formControlName="script" rows="8"
-                            class="relative w-full bg-slate-900/90 text-slate-100 rounded-xl border border-slate-700 focus:border-transparent focus:ring-2 focus:ring-indigo-500 p-4 transition-all resize-none placeholder-slate-600 focus:outline-none"
-                            [placeholder]="'PLACEHOLDER' | translate"></textarea>
-                    </div>
-                    @if (scriptControl.touched && scriptControl.hasError('required')) {
-                    <p class="mt-2 text-sm text-red-400">{{ 'ERROR_REQUIRED' | translate }}</p>
-                    }
-                    @if (errorMessage()) {
-                    <div class="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-                        {{ errorMessage() | translate }}
-                    </div>
-                    }
-                </div>
+            <app-script-form [isSubmitting]="isSubmitting()" [errorMessage]="errorMessage()"
+                (formSubmit)="handleScriptSubmit($event)">
+            </app-script-form>
+            }
 
-                <button type="submit" [disabled]="scriptForm.invalid || isSubmitting()"
-                    class="w-full relative group overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 p-4 font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
-                    <div
-                        class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    </div>
-                    <span class="relative flex items-center justify-center gap-2">
-                        @if (isSubmitting()) {
-                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                            </circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                        {{ 'PROCESSING' | translate }}
-                        } @else {
-                        <span>{{ 'GENERATE_BUTTON' | translate }}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                        </svg>
-                        }
-                    </span>
-                </button>
-            </form>
-            } @else if (processingStatus() === 'processing') {
+            @else if (processingStatus() === 'processing') {
             <div class="flex flex-col items-center justify-center py-12">
                 <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
-                <!-- Use a generic key or hardcode for now if key doesn't exist. Assuming 'GENERATING_VIDEO_MSG' exists in translations or I should use 'PROCESSING' -->
                 <p class="text-xl text-slate-300">{{ 'PROCESSING' | translate }}...</p>
                 <p class="text-sm text-slate-500 mt-2">{{ 'WAITING_MSG' | translate }}</p>
             </div>
-            } @else if (processingStatus() === 'preview') {
+            }
+
+            @else if (processingStatus() === 'preview') {
             <div class="w-full">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-white">{{ 'PREVIEW_TITLE' | translate }}</h2>
@@ -79,193 +35,31 @@
                     </button>
                 </div>
 
-                <!-- Live Preview Player -->
-                <div class="flex justify-center mb-12">
-                    <div
-                        class="relative w-[360px] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-800">
+                <app-preview-player [activeImage]="activeImage()" [previousImage]="previousImage()"
+                    [activeSubtitle]="activeSubtitle()" [subtitleColor]="subtitleColor()"
+                    [isPlaying]="playerService.isPlaying()" [currentEffect]="currentEffect()"
+                    (togglePlay)="togglePlay()">
+                </app-preview-player>
 
-                        <!-- Layer 1: Previous Image (during transition) -->
-                        @if (previousImage()) {
-                        <div class="absolute inset-0 z-10 transition-opacity duration-1000 ease-in-out opacity-0">
-                            <img [src]="previousImage()" class="w-full h-full object-cover">
-                        </div>
-                        }
-
-                        <!-- Layer 0: Active Image -->
-                        <div class="absolute inset-0 z-0">
-                            <img [src]="activeImage()" class="w-full h-full object-cover transform origin-center"
-                                [ngClass]="currentEffect()"
-                                [style.animation-play-state]="isPlaying() ? 'running' : 'paused'">
-                        </div>
-
-                        <!-- Subtitle Overlay -->
-                        <div
-                            class="absolute inset-0 flex items-center justify-center pointer-events-none z-20 px-6 text-center">
-                            <!-- Font family setup in styles.css -->
-                            <p class="text-3xl md:text-4xl font-bold font-permanent-marker drop-shadow-xl leading-tight"
-                                [style.color]="subtitleColor()"
-                                style="-webkit-text-stroke: 1.2px black; text-shadow: 2px 2px 0 #000;">
-                                {{ activeSubtitle() }}
-                            </p>
-                        </div>
-
-                        <!-- Controls Overlay -->
-                        <div class="absolute inset-0 z-30 flex items-center justify-center bg-black/10 hover:bg-black/40 transition-colors group cursor-pointer"
-                            (click)="togglePlay()">
-                            <div
-                                class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform opacity-0 group-hover:opacity-100">
-                                @if (isPlaying()) {
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-                                </svg>
-                                } @else {
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-8 h-8 ml-1">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-                                </svg>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- Subtitle Settings -->
-                    <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50">
-                        <h3 class="text-lg font-semibold text-white mb-4">{{ 'SUBTITLE_SETTINGS' | translate }}</h3>
-                        <div class="flex flex-wrap items-center gap-6">
-                            <div class="flex flex-col gap-2">
-                                <label class="text-xs text-slate-400 uppercase font-bold">{{ 'TEXT_COLOR' | translate
-                                    }}</label>
-                                <div class="flex items-center gap-3">
-                                    <!-- Presets -->
-                                    <button (click)="setSubtitleColor('#FFFFFF')"
-                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-white cursor-pointer"
-                                        [class.ring-2]="subtitleColor() === '#FFFFFF'"
-                                        [class.ring-indigo-500]="subtitleColor() === '#FFFFFF'"></button>
-                                    <button (click)="setSubtitleColor('#F4D03F')"
-                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#F4D03F] cursor-pointer"
-                                        [class.ring-2]="subtitleColor() === '#F4D03F'"
-                                        [class.ring-indigo-500]="subtitleColor() === '#F4D03F'"></button>
-                                    <button (click)="setSubtitleColor('#2ECC71')"
-                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#2ECC71] cursor-pointer"
-                                        [class.ring-2]="subtitleColor() === '#2ECC71'"
-                                        [class.ring-indigo-500]="subtitleColor() === '#2ECC71'"></button>
-                                    <button (click)="setSubtitleColor('#3498DB')"
-                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#3498DB] cursor-pointer"
-                                        [class.ring-2]="subtitleColor() === '#3498DB'"
-                                        [class.ring-indigo-500]="subtitleColor() === '#3498DB'"></button>
-                                    <button (click)="setSubtitleColor('#E74C3C')"
-                                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform bg-[#E74C3C] cursor-pointer"
-                                        [class.ring-2]="subtitleColor() === '#E74C3C'"
-                                        [class.ring-indigo-500]="subtitleColor() === '#E74C3C'"></button>
-
-                                    <!-- Custom Hex -->
-                                    <div
-                                        class="relative ml-4 flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
-                                        <span class="text-slate-400 pl-2">#</span>
-                                        <input type="text" [ngModel]="subtitleColor().replace('#','')"
-                                            (ngModelChange)="setSubtitleColor('#' + $event)"
-                                            class="w-20 bg-transparent text-white p-1 outline-none uppercase font-mono"
-                                            maxlength="6">
-                                        <input type="color" [ngModel]="subtitleColor()"
-                                            (ngModelChange)="setSubtitleColor($event)"
-                                            class="w-8 h-8 rounded cursor-pointer border-0 p-0 ml-2">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @for (segment of projectData().segments; track segment.id; let i = $index) {
-                    <div
-                        class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row gap-6">
-                        <!-- Image Column -->
-                        <div class="w-full md:w-2/5 flex flex-col gap-4">
-                            <div
-                                class="relative aspect-[9/16] bg-black/50 rounded-xl overflow-hidden border border-slate-700">
-                                <img [src]="getImageUrl(segment.imagePath)" class="w-full h-full object-cover">
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label class="text-xs text-slate-400 uppercase tracking-wider font-bold">PROMPT</label>
-                                <textarea rows="3" [(ngModel)]="segment.prompt" [ngModelOptions]="{standalone: true}"
-                                    class="w-full bg-slate-800 rounded-lg p-3 text-sm text-slate-200 border border-slate-700 focus:border-indigo-500 outline-none resize-none"></textarea>
-                                <div class="flex gap-2">
-                                    <button (click)="regenerateImage(i, segment.prompt)"
-                                        class="flex-1 text-xs bg-slate-700 hover:bg-slate-600 hover:shadow-md active:scale-95 py-2 rounded text-white transition-all cursor-pointer">
-                                        {{ 'REGENERATE_IMAGE' | translate }}
-                                    </button>
-                                    <button (click)="fileInput.click()"
-                                        class="flex-none px-3 text-xs bg-indigo-600 hover:bg-indigo-500 hover:shadow-md hover:scale-110 active:scale-90 py-2 rounded text-white transition-all flex items-center justify-center cursor-pointer"
-                                        title="{{ 'UPLOAD_IMAGE' | translate }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                                        </svg>
-                                    </button>
-                                    <input #fileInput type="file" class="hidden" (change)="onFileSelected($event, i)"
-                                        accept="image/*">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Subtitles Column -->
-                        <div class="w-full md:w-3/5 flex flex-col gap-4">
-                            <h3 class="text-lg font-semibold text-white">Subtitles</h3>
-                            <div class="grid grid-cols-1 gap-1">
-                                @for (sub of getSegmentSubtitles(i); track $index) {
-                                <div
-                                    class="flex gap-4 items-center p-2 rounded hover:bg-slate-800/50 transition-colors group">
-                                    <span class="text-xs font-mono text-slate-500 w-16 text-right select-none">
-                                        {{ (sub.start | number:'1.2-2') }}s
-                                    </span>
-                                    <!-- Clean input without borders, looking like text -->
-                                    <input type="text" [value]="sub.text" (change)="onSubtitleChange(sub, $event)"
-                                        [style.color]="subtitleColor()"
-                                        class="flex-1 bg-transparent text-lg font-medium outline-none border-none focus:ring-0 placeholder-slate-600">
-                                </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    }
-                </div>
+                <app-segment-list [projectData]="projectData()" [projectId]="projectId()"
+                    [subtitleColor]="subtitleColor()" (subtitleColorChange)="setSubtitleColor($event)"
+                    (regenerateImage)="regenerateImage($event.index, $event.prompt)"
+                    (uploadImage)="uploadImage($event.index, $event.file)" (updateSubtitle)="updateSubtitle()">
+                </app-segment-list>
             </div>
-            } @else if (processingStatus() === 'generating') {
+            }
+
+            @else if (processingStatus() === 'generating') {
             <div class="flex flex-col items-center justify-center py-12">
                 <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-500 mb-4"></div>
                 <p class="text-xl text-slate-300">{{ 'GENERATING_FINAL' | translate }}...</p>
                 <p class="text-sm text-slate-500 mt-2">{{ 'WAITING_MSG' | translate }}</p>
             </div>
-            } @else if (processingStatus() === 'completed') {
-            <div class="flex flex-col items-center w-full">
-                <!-- Use ngIf just in case videoUrl is null for some reason -->
-                <video *ngIf="videoUrl()" controls autoplay
-                    class="w-full max-h-[80vh] rounded-xl shadow-lg border border-slate-700">
-                    <source [src]="videoUrl()" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <div class="flex gap-4 mt-6 justify-center w-full">
-                    <a [href]="videoUrl()" download="final_video.mp4" target="_blank"
-                        class="h-12 px-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-lg text-white font-bold shadow-lg transition-transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer no-underline min-w-[160px]">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M12 3v13.5m0 0l-3-3m3 3l3-3" />
-                        </svg>
-                        {{ 'DOWNLOAD_VIDEO' | translate }}
-                    </a>
-                    <button
-                        (click)="processingStatus.set('input'); projectId.set(null); videoUrl.set(null); scriptForm.reset()"
-                        class="h-12 px-6 bg-slate-700 hover:bg-slate-600 hover:shadow-lg active:scale-95 rounded-lg text-white font-bold transition-all cursor-pointer flex items-center justify-center min-w-[160px]">
-                        {{ 'BACK_BUTTON' | translate }}
-                    </button>
-                </div>
-            </div>
+            }
+
+            @else if (processingStatus() === 'completed') {
+            <app-video-result [videoUrl]="videoUrl()" (onBack)="resetForm()">
+            </app-video-result>
             }
         </div>
     </div>
