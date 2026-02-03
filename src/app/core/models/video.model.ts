@@ -3,8 +3,8 @@ export interface VideoScript {
 }
 
 export interface VideoResponse {
-    id: string;
-    status: 'pending' | 'processing' | 'completed' | 'failed';
-    url?: string;
+    projectId: string;
+    status?: 'pending' | 'processing' | 'completed' | 'failed';
+    videoPath?: string;
     message?: string;
 }

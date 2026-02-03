@@ -2,9 +2,11 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { VideoService } from '../../core/services/video.service';
+import { SocketService } from '../../core/services/socket.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-script-input',
@@ -16,6 +18,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 export class ScriptInputComponent {
     private fb = inject(FormBuilder);
     private videoService = inject(VideoService);
+    private socketService = inject(SocketService);
     private translate = inject(TranslateService);
 
     scriptForm: FormGroup = this.fb.group({
@@ -24,6 +27,9 @@ export class ScriptInputComponent {
 
     isSubmitting = signal(false);
     errorMessage = signal<string | null>(null);
+    projectId = signal<string | null>(null);
+    videoUrl = signal<string | null>(null);
+    processingStatus = signal<'input' | 'processing' | 'completed'>('input');
 
     get scriptControl() {
         return this.scriptForm.get('script')!;
@@ -45,11 +51,28 @@ export class ScriptInputComponent {
                     finalize(() => this.isSubmitting.set(false))
                 )
                 .subscribe((response) => {
-                    if (response) {
-                        console.log('Video generation started:', response);
-                        const msg = this.translate.instant('VIDEO_STARTED');
-                        alert(msg + response.id);
-                        this.scriptForm.reset();
+                    if (response && response.projectId) {
+                        console.log('Video generation started:', response.projectId);
+                        this.projectId.set(response.projectId);
+                        this.processingStatus.set('processing');
+
+                        this.socketService.joinProject(response.projectId);
+                        this.socketService.onProjectUpdate().subscribe((data) => {
+                            console.log('Socket update:', data);
+                            if (data.status === 'completed' && data.videoUrl) {
+                                // Construct full URL if needed, assuming backend sends relative path or full URL
+                                // If local file path, we might need to serve it properly via static assets
+                                // For now assuming backend serves 'projects/...' statically or keys
+                                // Data.videoUrl is likely absolute path from backend, we need to convert to url
+                                // Actually, let's assume backend serves via static or we fix that later.
+                                // For this step, I'll direct to a hypothetical endpoint or just use the string.
+                                this.videoUrl.set(`${environment.apiUrl}/projects/${response.projectId}/final_video.mp4`);
+                                this.processingStatus.set('completed');
+                            } else if (data.status === 'failed') {
+                                this.errorMessage.set('VIDEO_GENERATION_FAILED');
+                                this.processingStatus.set('input');
+                            }
+                        });
                     }
                 });
         } else {
