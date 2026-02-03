@@ -1,0 +1,12 @@
+{
+    "WELCOME": "Welcome to Clip Studio",
+    "VIDEO_CREATOR": "Video Creator",
+    "SUBTITLE": "Turn your text into engaging videos instantly.",
+    "VIDEO_SCRIPT_LABEL": "Video Script",
+    "PLACEHOLDER": "Paste your script here... e.g. 'In this video, we will explore the wonders of the deep ocean...'",
+    "ERROR_REQUIRED": "Please enter a script to proceed.",
+    "PROCESSING": "Processing...",
+    "GENERATE_BUTTON": "Generate Video",
+    "ERROR_SERVER_CONNECT": "Failed to connect to the server. Please try again later.",
+    "VIDEO_STARTED": "Video generation started! ID: "
+}

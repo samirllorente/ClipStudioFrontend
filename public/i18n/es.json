@@ -1,0 +1,12 @@
+{
+    "WELCOME": "Bienvenido a Clip Studio",
+    "VIDEO_CREATOR": "Creador de Videos",
+    "SUBTITLE": "Convierte tu texto en videos atractivos al instante.",
+    "VIDEO_SCRIPT_LABEL": "Guion del Video",
+    "PLACEHOLDER": "Pega tu guion aquí... ej: 'En este video, exploraremos las maravillas del océano profundo...'",
+    "ERROR_REQUIRED": "Por favor ingresa un guion para continuar.",
+    "PROCESSING": "Procesando...",
+    "GENERATE_BUTTON": "Generar Video",
+    "ERROR_SERVER_CONNECT": "Error al conectar con el servidor. Por favor inténtalo de nuevo más tarde.",
+    "VIDEO_STARTED": "¡Generación de video iniciada! ID: "
+}
