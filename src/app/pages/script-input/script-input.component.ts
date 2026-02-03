@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal, effect, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, effect, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { VideoService } from '../../core/services/video.service';
 import { SocketService } from '../../core/services/socket.service';
 import { PlayerService } from '../../core/services/player.service';
@@ -28,10 +29,12 @@ import { VideoResultComponent } from './components/video-result/video-result.com
     templateUrl: './script-input.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScriptInputComponent implements OnDestroy {
+export class ScriptInputComponent implements OnDestroy, OnInit {
     private videoService = inject(VideoService);
     private socketService = inject(SocketService);
     public playerService = inject(PlayerService);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
 
     isSubmitting = signal(false);
     errorMessage = signal<string | null>(null);
@@ -60,6 +63,67 @@ export class ScriptInputComponent implements OnDestroy {
         });
     }
 
+    ngOnInit() {
+        this.route.queryParams.subscribe(params => {
+            const projectId = params['id'];
+            if (projectId) {
+                this.projectId.set(projectId);
+                this.loadProjectState(projectId);
+            }
+        });
+    }
+
+    loadProjectState(projectId: string) {
+        this.videoService.getProject(projectId).subscribe({
+            next: (project) => {
+                if (!project) {
+                    this.clearUrl();
+                    return;
+                }
+
+                // Set initial status based on project status
+                if (project.status === 'completed') {
+                    this.videoUrl.set(`${environment.apiUrl}/projects/${projectId}/final_video.mp4`);
+                    this.processingStatus.set(VIDEO_CONSTANTS.STATUS.COMPLETED);
+                } else if (project.status === 'draft_ready' || project.status === 'generating_video') { // Treat generating as preview mode so user can see progress/result eventually
+                    // If it was generating, we might want to show spinner, but let's default to preview layout
+                    // and let socket status update it if needed.
+                    this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PREVIEW);
+                    this.projectData.set(project);
+                    this.loadProjectPreview(projectId); // This sets up player etc
+                } else if (project.status === 'processing' || project.status === 'pending') {
+                    this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PROCESSING);
+                } else if (project.status === 'failed') {
+                    this.errorMessage.set('VIDEO_GENERATION_FAILED');
+                    // Maybe show input again but with error?
+                }
+
+                // Re-join socket
+                this.socketService.joinProject(projectId);
+                this.socketService.onProjectUpdate().subscribe((data) => {
+                    this.handleProjectUpdate(data, projectId);
+                });
+            },
+            error: () => this.clearUrl()
+        });
+    }
+
+    updateUrl(projectId: string) {
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { id: projectId },
+            queryParamsHandling: 'merge'
+        });
+    }
+
+    clearUrl() {
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { id: null },
+            queryParamsHandling: 'merge'
+        });
+    }
+
     ngOnDestroy() {
         this.playerService.cleanup();
     }
@@ -82,6 +146,7 @@ export class ScriptInputComponent implements OnDestroy {
                     console.log('Video generation started:', response.projectId);
                     this.projectId.set(response.projectId);
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PROCESSING);
+                    this.updateUrl(response.projectId);
 
                     this.socketService.joinProject(response.projectId);
 
@@ -183,6 +248,7 @@ export class ScriptInputComponent implements OnDestroy {
         this.projectId.set(null);
         this.videoUrl.set(null);
         this.playerService.reset();
+        this.clearUrl();
     }
 
     private getImageUrl(imagePath: string): string {
