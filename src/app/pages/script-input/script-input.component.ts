@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, effect, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, effect, OnDestroy, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VideoService } from '../../core/services/video.service';
@@ -15,6 +15,8 @@ import { PreviewPlayerComponent } from './components/preview-player/preview-play
 import { SegmentListComponent } from './components/segment-list/segment-list.component';
 import { VideoResultComponent } from './components/video-result/video-result.component';
 
+import { SubtitleEditorComponent } from './components/subtitle-editor/subtitle-editor.component';
+
 @Component({
     selector: 'app-script-input',
     standalone: true,
@@ -24,7 +26,8 @@ import { VideoResultComponent } from './components/video-result/video-result.com
         ScriptFormComponent,
         PreviewPlayerComponent,
         SegmentListComponent,
-        VideoResultComponent
+        VideoResultComponent,
+        SubtitleEditorComponent
     ],
     templateUrl: './script-input.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +43,20 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
     errorMessage = signal<string | null>(null);
     projectId = signal<string | null>(null);
     videoUrl = signal<string | null>(null);
-    subtitleColor = signal<string>(VIDEO_CONSTANTS.DEFAULT_SUBTITLE_COLOR);
+
+    // Subtitle Settings State
+    subtitleSettings = signal<any>({
+        fontSize: 22,
+        fontFamily: 'Permanent Marker',
+        color: VIDEO_CONSTANTS.DEFAULT_SUBTITLE_COLOR,
+        yPosition: 50,
+        letterSpacing: 0,
+        showSubtitles: true
+    });
+    showSubtitles = computed(() => this.subtitleSettings().showSubtitles);
+
+    subtitleEditorOpen = signal(false);
+
     processingStatus = signal<ProcessingStatus>(VIDEO_CONSTANTS.STATUS.INPUT);
     projectData = signal<any>(null);
 
@@ -182,6 +198,10 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         this.videoService.getProject(projectId).subscribe(project => {
             if (project) {
                 this.projectData.set(project);
+                if (project.subtitleSettings) {
+                    const mergedSettings = { showSubtitles: true, ...project.subtitleSettings };
+                    this.subtitleSettings.set(mergedSettings);
+                }
                 this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PREVIEW);
 
                 // Init audio player
@@ -301,16 +321,54 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         const id = this.projectId();
         if (!id) return;
         this.processingStatus.set(VIDEO_CONSTANTS.STATUS.GENERATING);
-        this.videoService.renderVideo(id, { subtitleColor: this.subtitleColor() }).subscribe(() => {
+        this.videoService.renderVideo(id, { subtitleSettings: this.subtitleSettings() }).subscribe(() => {
             // Status will update via socket to 'completed'
         });
     }
 
-    setSubtitleColor(color: string) {
-        this.subtitleColor.set(color);
-    }
-
     togglePlay() {
         this.playerService.togglePlay();
+    }
+
+    // Subtitle Editor Methods
+    openSubtitleEditor() {
+        this.subtitleEditorOpen.set(true);
+    }
+
+    closeSubtitleEditor() {
+        this.subtitleEditorOpen.set(false);
+    }
+
+    updateSubtitleSettingsLocal(settings: any) {
+        this.subtitleSettings.set(settings);
+    }
+
+    saveSubtitleSettings(settings: any) {
+        const id = this.projectId();
+        if (id) {
+            this.videoService.updateSubtitleSettings(id, settings).subscribe(() => {
+                this.subtitleSettings.set(settings);
+                this.closeSubtitleEditor();
+            });
+        }
+    }
+
+    toggleSubtitles(show: boolean) {
+        const currentSettings = this.subtitleSettings();
+        const newSettings = { ...currentSettings, showSubtitles: show };
+
+        // Optimistic update
+        this.subtitleSettings.set(newSettings);
+
+        const id = this.projectId();
+        if (id) {
+            this.videoService.updateSubtitleSettings(id, newSettings).subscribe({
+                error: (err) => {
+                    console.error('Failed to update subtitle settings', err);
+                    // Revert on error
+                    this.subtitleSettings.set(currentSettings);
+                }
+            });
+        }
     }
 }

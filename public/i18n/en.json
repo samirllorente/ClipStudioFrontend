@@ -19,5 +19,17 @@
     "SUBTITLE_SETTINGS": "Subtitle Appearance",
     "TEXT_COLOR": "Text Color",
     "UPLOAD_IMAGE": "Upload Image",
-    "DOWNLOAD_VIDEO": "Download Video"
+    "DOWNLOAD_VIDEO": "Download Video",
+    "OPEN_EDITOR": "Subtitle Editor",
+    "FONT_FAMILY": "Font Family",
+    "FONT_SIZE": "Font Size",
+    "POSITION_Y": "Vertical Position",
+    "LETTER_SPACING": "Letter Spacing",
+    "LOWER": "Lower",
+    "HIGHER": "Higher",
+    "SAVE_SETTINGS": "Save Changes",
+    "SUBTITLE_SETTINGS_DESC": "Customize font, color, position and spacing.",
+    "SUBTITLES_HEADER": "Subtitles",
+    "SHOW_SUBTITLES": "Show Subtitles",
+    "RESET_SETTINGS": "Reset Defaults"
 }

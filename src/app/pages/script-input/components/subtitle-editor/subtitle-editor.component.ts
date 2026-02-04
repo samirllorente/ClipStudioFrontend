@@ -1,0 +1,272 @@
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
+
+@Component({
+    selector: 'app-subtitle-editor',
+    standalone: true,
+    imports: [CommonModule, FormsModule, TranslateModule],
+    template: `
+    <div class="fixed inset-y-0 left-0 w-96 bg-slate-900 border-r border-slate-700 shadow-2xl z-50 transform transition-transform duration-300 overflow-y-auto"
+         [class.translate-x-0]="isOpen" [class.-translate-x-full]="!isOpen">
+      
+      <!-- Header -->
+      <div class="p-6 border-b border-slate-700 md:pt-16 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-white">{{ 'SUBTITLE_SETTINGS' | translate }}</h2>
+        <button (click)="close.emit()" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-8">
+        
+        <!-- Live Preview -->
+        <div class="space-y-2">
+           <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">PREVIEW</label>
+           <!-- Horizontal Aspect Ratio (16:9) Container -->
+           <div class="w-full aspect-video bg-black/50 rounded-lg overflow-hidden border border-slate-700 relative shadow-inner flex items-center justify-center">
+               
+               <!-- Subtitle Container -->
+               <div class="absolute left-0 right-0 px-4 text-center transition-all duration-300 pointer-events-none"
+                    [style.top.%]="localSettings.yPosition"
+                    style="transform: translateY(-50%);">
+                    <p [style.font-family]="localSettings.fontFamily"
+                       [style.font-size.px]="localSettings.fontSize" 
+                       [style.color]="localSettings.color"
+                       [style.letter-spacing.px]="localSettings.letterSpacing"
+                       [style.text-shadow]="'2px 2px 0px black'" 
+                       style="-webkit-text-stroke: 1px black; paint-order: stroke fill;"
+                       class="leading-tight transition-all duration-100 break-words w-full">
+                       {{ currentWord }}
+                    </p>
+               </div>
+           </div>
+        </div>
+
+        <!-- Font Family -->
+        <div class="space-y-2">
+            <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'FONT_FAMILY' | translate }}</label>
+            <div class="relative">
+                <!-- Backdrop for dropdown (Click Outside) -->
+                <div *ngIf="fontsDropdownOpen" (click)="fontsDropdownOpen = false" class="fixed inset-0 z-10 cursor-default"></div>
+
+                <!-- Custom Trigger -->
+                <button (click)="toggleFontDropdown()" 
+                        class="w-full bg-slate-800 text-white rounded-lg p-3 border border-slate-700 focus:border-indigo-500 outline-none flex justify-between items-center relative z-20 hover:bg-slate-750 transition-colors text-left group">
+                    <span [style.font-family]="localSettings.fontFamily" class="text-lg truncate mr-2">{{ localSettings.fontFamily }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
+                         class="w-4 h-4 text-slate-400 transition-transform duration-200 group-hover:text-white"
+                         [class.rotate-180]="fontsDropdownOpen">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>
+
+                <!-- Custom Dropdown List -->
+                <div *ngIf="fontsDropdownOpen" 
+                     class="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl z-30 max-h-80 overflow-y-auto ring-1 ring-black ring-opacity-5">
+                    @for(font of availableFonts; track font) {
+                        <div (click)="selectFont(font)"
+                             class="p-3 hover:bg-slate-800 cursor-pointer flex items-center gap-3 transition-colors border-b border-slate-800/50 last:border-0 group">
+                             
+                             <!-- Checkmark Indicator -->
+                             <div class="w-5 flex items-center justify-center shrink-0">
+                                 @if(localSettings.fontFamily === font) {
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 text-indigo-500">
+                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                     </svg>
+                                 }
+                             </div>
+
+                             <!-- Visual Font Preview -->
+                             <span [style.font-family]="font" class="text-xl text-slate-300 group-hover:text-white transition-colors">{{ font }}</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Font Size -->
+        <div class="space-y-2">
+            <div class="flex justify-between">
+                <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'FONT_SIZE' | translate }}</label>
+                <span class="text-xs text-white font-mono">{{ localSettings.fontSize }}px</span>
+            </div>
+            <input type="range" min="14" max="100" [(ngModel)]="localSettings.fontSize" (ngModelChange)="updateSettings()"
+                   class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+        </div>
+
+        <!-- Text Color -->
+        <div class="space-y-2">
+            <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'TEXT_COLOR' | translate }}</label>
+            <div class="flex flex-wrap gap-2">
+                @for(color of predefinedColors; track color) {
+                    <button (click)="setColor(color)"
+                        class="w-8 h-8 rounded-full border-2 border-slate-600 hover:scale-110 transition-transform cursor-pointer"
+                        [style.background-color]="color"
+                        [class.ring-2]="localSettings.color === color"
+                        [class.ring-indigo-500]="localSettings.color === color"></button>
+                }
+                
+                <div class="relative ml-auto flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
+                    <input type="color" [(ngModel)]="localSettings.color" (ngModelChange)="updateSettings()"
+                        class="w-8 h-8 rounded cursor-pointer border-0 p-0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Vertical Position -->
+        <div class="space-y-2">
+            <div class="flex justify-between">
+                <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'POSITION_Y' | translate }}</label>
+                <span class="text-xs text-white font-mono">{{ localSettings.yPosition }}%</span>
+            </div>
+            <input type="range" min="0" max="100" [(ngModel)]="localSettings.yPosition" (ngModelChange)="updateSettings()"
+                   class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+            <div class="flex justify-between text-[10px] text-slate-500 uppercase">
+                <span>{{ 'HIGHER' | translate }}</span>
+                <span>{{ 'LOWER' | translate }}</span>
+            </div>
+        </div>
+
+        <!-- Letter Spacing -->
+        <div class="space-y-2">
+            <div class="flex justify-between">
+                <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'LETTER_SPACING' | translate }}</label>
+                <span class="text-xs text-white font-mono">{{ localSettings.letterSpacing }}px</span>
+            </div>
+             <input type="range" min="-2" max="10" step="0.5" [(ngModel)]="localSettings.letterSpacing" (ngModelChange)="updateSettings()"
+                   class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-3 pt-4">
+            <button (click)="saveSettings.emit(localSettings)"
+                    class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95">
+                {{ 'SAVE_SETTINGS' | translate }}
+            </button>
+            
+            <button (click)="resetSettings()"
+                    class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg border border-slate-700 transition-all active:scale-95 hover:text-white">
+                {{ 'RESET_SETTINGS' | translate }}
+            </button>
+        </div>
+
+      </div>
+    </div>
+    
+    <!-- Backdrop -->
+    <div *ngIf="isOpen" (click)="close.emit()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity"></div>
+  `,
+    styles: []
+})
+export class SubtitleEditorComponent implements OnChanges, OnDestroy {
+    @Input() isOpen = false;
+    @Input() settings: any = {};
+    @Output() close = new EventEmitter<void>();
+    @Output() settingsChange = new EventEmitter<any>(); // Live preview emission
+    @Output() saveSettings = new EventEmitter<any>();   // Persistence emission
+
+    localSettings: any = {
+        fontSize: 22,
+        fontFamily: 'Permanent Marker',
+        color: '#F4D03F',
+        yPosition: 50,
+        letterSpacing: 0
+    };
+
+    fullPreviewText = "Esta es una prueba de todo lo que puede lograr con ClipStudio";
+    words: string[] = [];
+    currentWord = "";
+    private intervalId: any;
+    private wordIndex = 0;
+
+    constructor(private cdr: ChangeDetectorRef) {
+        this.words = this.fullPreviewText.split(" ");
+        this.currentWord = this.words[0];
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['settings'] && this.settings) {
+            this.localSettings = { ...this.localSettings, ...this.settings };
+        }
+        if (changes['isOpen']) {
+            if (this.isOpen) {
+                this.startPreviewLoop();
+            } else {
+                this.stopPreviewLoop();
+            }
+        }
+    }
+
+    ngOnDestroy() {
+        this.stopPreviewLoop();
+    }
+
+    startPreviewLoop() {
+        this.stopPreviewLoop();
+        this.intervalId = setInterval(() => {
+            this.currentWord = this.words[this.wordIndex];
+            this.wordIndex = (this.wordIndex + 1) % this.words.length;
+            this.cdr.detectChanges(); // Force update since parent is OnPush
+        }, 500);
+    }
+
+    stopPreviewLoop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+
+    availableFonts = [
+        'Permanent Marker',
+        'Bagel Fat One',
+        'Bangers',
+        'Chicle',
+        'Condiment',
+        'Italianno',
+        'Pacifico',
+        'Pirata One',
+        'Roboto',
+        'Poppins'
+    ];
+
+    predefinedColors = VIDEO_CONSTANTS.SUBTITLE_COLORS;
+
+    fontsDropdownOpen = false;
+
+    updateSettings() {
+        this.settingsChange.emit(this.localSettings);
+    }
+
+    toggleFontDropdown() {
+        this.fontsDropdownOpen = !this.fontsDropdownOpen;
+    }
+
+    selectFont(font: string) {
+        this.localSettings.fontFamily = font;
+        this.updateSettings();
+        this.fontsDropdownOpen = false;
+    }
+
+    setColor(color: string) {
+        this.localSettings.color = color;
+        this.updateSettings();
+    }
+
+    resetSettings() {
+        this.localSettings = {
+            fontSize: 22,
+            fontFamily: 'Permanent Marker',
+            color: '#F4D03F', // Default Yellow
+            yPosition: 50,
+            letterSpacing: 0,
+            showSubtitles: this.localSettings.showSubtitles ?? true
+        };
+        this.updateSettings();
+    }
+}

@@ -19,5 +19,17 @@
     "SUBTITLE_SETTINGS": "Apariencia de Subtítulos",
     "TEXT_COLOR": "Color de Texto",
     "UPLOAD_IMAGE": "Subir Imagen",
-    "DOWNLOAD_VIDEO": "Descargar Video"
+    "DOWNLOAD_VIDEO": "Descargar Video",
+    "OPEN_EDITOR": "Editor de Subtítulos",
+    "FONT_FAMILY": "Tipografía",
+    "FONT_SIZE": "Tamaño de Fuente",
+    "POSITION_Y": "Posición Vertical",
+    "LETTER_SPACING": "Espaciado",
+    "LOWER": "Abajo",
+    "HIGHER": "Arriba",
+    "SAVE_SETTINGS": "Guardar Cambios",
+    "SUBTITLE_SETTINGS_DESC": "Personaliza la fuente, color, posición y espaciado.",
+    "SUBTITLES_HEADER": "Subtítulos",
+    "SHOW_SUBTITLES": "Mostrar Subtítulos",
+    "RESET_SETTINGS": "Restaurar Valores"
 }

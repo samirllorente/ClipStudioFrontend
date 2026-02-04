@@ -1,4 +1,8 @@
 <div class="min-h-screen bg-[#0f172a] text-white font-['Outfit'] flex items-center justify-center p-4">
+    <app-subtitle-editor [isOpen]="subtitleEditorOpen()" [settings]="subtitleSettings()" (close)="closeSubtitleEditor()"
+        (settingsChange)="updateSubtitleSettingsLocal($event)" (saveSettings)="saveSubtitleSettings($event)">
+    </app-subtitle-editor>
+
     <div class="w-full max-w-5xl">
         <!-- Header -->
         <div class="mb-8 text-center">
@@ -36,13 +40,15 @@
                 </div>
 
                 <app-preview-player [activeImage]="activeImage()" [previousImage]="previousImage()"
-                    [activeSubtitle]="activeSubtitle()" [subtitleColor]="subtitleColor()"
-                    [isPlaying]="playerService.isPlaying()" [currentEffect]="currentEffect()"
-                    (togglePlay)="togglePlay()">
+                    [activeSubtitle]="activeSubtitle()" [subtitleSettings]="subtitleSettings()"
+                    [showSubtitles]="showSubtitles()" [isPlaying]="playerService.isPlaying()"
+                    [currentEffect]="currentEffect()" (togglePlay)="togglePlay()"
+                    (toggleSubtitles)="toggleSubtitles($event)">
                 </app-preview-player>
 
                 <app-segment-list [projectData]="projectData()" [projectId]="projectId()"
-                    [subtitleColor]="subtitleColor()" (subtitleColorChange)="setSubtitleColor($event)"
+                    [subtitleSettings]="subtitleSettings()" (openSubtitleEditor)="openSubtitleEditor()"
+                    (toggleSubtitles)="toggleSubtitles($event)"
                     (regenerateImage)="regenerateImage($event.index, $event.prompt)"
                     (uploadImage)="uploadImage($event.index, $event.file)" (updateSubtitle)="updateSubtitle()">
                 </app-segment-list>
