@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -55,9 +55,12 @@ import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
                   <textarea rows="3" [(ngModel)]="segment.prompt" [ngModelOptions]="{standalone: true}"
                       class="w-full bg-slate-800 rounded-lg p-3 text-sm text-slate-200 border border-slate-700 focus:border-indigo-500 outline-none resize-none"></textarea>
                   <div class="flex gap-2">
-                      <button (click)="regenerateImage.emit({index: i, prompt: segment.prompt})"
-                          class="flex-1 text-xs bg-slate-700 hover:bg-slate-600 hover:shadow-md active:scale-95 py-2 rounded text-white transition-all cursor-pointer">
-                          {{ 'REGENERATE_IMAGE' | translate }}
+                      <button (click)="handleRegenerate(i, segment.prompt)" [disabled]="isRegenerating(i)"
+                          class="flex-1 text-xs bg-slate-700 hover:bg-slate-600 hover:shadow-md active:scale-95 py-2 rounded text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                          @if(isRegenerating(i)) {
+                              <div class="animate-spin h-3 w-3 border-2 border-white rounded-full border-t-transparent"></div>
+                          }
+                          {{ (isRegenerating(i) ? 'PROCESSING' : 'REGENERATE_IMAGE') | translate }}
                       </button>
                       <button (click)="fileInput.click()"
                           class="flex-none px-3 text-xs bg-indigo-600 hover:bg-indigo-500 hover:shadow-md hover:scale-110 active:scale-90 py-2 rounded text-white transition-all flex items-center justify-center cursor-pointer"
@@ -128,6 +131,28 @@ export class SegmentListComponent {
         if (file) {
             this.uploadImage.emit({ index, file });
         }
+    }
+
+    regeneratingSegments = new Set<number>();
+
+    handleRegenerate(index: number, prompt: string) {
+        this.regeneratingSegments.add(index);
+        this.regenerateImage.emit({ index, prompt });
+    }
+
+    isRegenerating(index: number): boolean {
+        return this.regeneratingSegments.has(index);
+    }
+
+    // Reset loading state when project data updates (assuming regeneration brings new data)
+    ngOnChanges() {
+        // Simple heuristic: if we get new project data, clear loading states?
+        // Or better, let's just clear specific index if we could track change.
+        // For now, let's keep it simple: we clear "loading" for an index only if we detect the image path changed?
+        // Actually, easiest valid UX for now: clear all on data change?
+        // Or just rely on a timer? 
+        // No, let's clear the set whenever projectData changes reference, as that implies a refresh.
+        this.regeneratingSegments.clear();
     }
 
     handleSubtitleChange(sub: any, event: any) {
