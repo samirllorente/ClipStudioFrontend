@@ -56,7 +56,7 @@ import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
 
                 <!-- Custom Trigger -->
                 <button (click)="toggleFontDropdown()" 
-                        class="w-full bg-slate-800 text-white rounded-lg p-3 border border-slate-700 focus:border-indigo-500 outline-none flex justify-between items-center relative z-20 hover:bg-slate-750 transition-colors text-left group">
+                        class="w-full bg-slate-800 text-white rounded-lg p-3 border border-slate-700 focus:border-indigo-500 outline-none flex justify-between items-center relative z-20 hover:bg-slate-750 transition-colors text-left group cursor-pointer">
                     <span [style.font-family]="localSettings.fontFamily" class="text-lg truncate mr-2">{{ localSettings.fontFamily }}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" 
                          class="w-4 h-4 text-slate-400 transition-transform duration-200 group-hover:text-white"
@@ -145,12 +145,12 @@ import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
         <!-- Action Buttons -->
         <div class="space-y-3 pt-4">
             <button (click)="saveSettings.emit(localSettings)"
-                    class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95">
+                    class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95 cursor-pointer">
                 {{ 'SAVE_SETTINGS' | translate }}
             </button>
             
             <button (click)="resetSettings()"
-                    class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg border border-slate-700 transition-all active:scale-95 hover:text-white">
+                    class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg border border-slate-700 transition-all active:scale-95 hover:text-white cursor-pointer">
                 {{ 'RESET_SETTINGS' | translate }}
             </button>
         </div>
