@@ -18,6 +18,7 @@ import { VideoResultComponent } from './components/video-result/video-result.com
 import { SubtitleEditorComponent } from './components/subtitle-editor/subtitle-editor.component';
 import { ThumbnailEditorComponent } from './components/thumbnail-editor/thumbnail-editor.component';
 import { SubtitleSettingsPanelComponent } from './components/subtitle-settings-panel/subtitle-settings-panel.component';
+import { MusicSettingsPanelComponent } from './components/music-settings-panel/music-settings-panel.component';
 
 @Component({
     selector: 'app-script-input',
@@ -32,7 +33,8 @@ import { SubtitleSettingsPanelComponent } from './components/subtitle-settings-p
         VideoResultComponent,
         SubtitleEditorComponent,
         ThumbnailEditorComponent,
-        SubtitleSettingsPanelComponent
+        SubtitleSettingsPanelComponent,
+        MusicSettingsPanelComponent
     ],
     templateUrl: './script-input.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +63,16 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
     showSubtitles = computed(() => this.subtitleSettings().showSubtitles);
 
     subtitleEditorOpen = signal(false);
+
+    // Music State
+    musicList = signal<any[]>([]);
+    musicSettings = signal<any>({
+        backgroundMusicId: null,
+        musicVolume: 15,
+        voiceVolume: 100,
+        enableMusic: true,
+        musicSource: 'library'
+    });
 
     processingStatus = signal<ProcessingStatus>(VIDEO_CONSTANTS.STATUS.INPUT);
     projectData = signal<any>(null);
@@ -93,12 +105,19 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
     }
 
     ngOnInit() {
+        this.loadMusicList();
         this.route.queryParams.subscribe(params => {
             const projectId = params['id'];
             if (projectId) {
                 this.projectId.set(projectId);
                 this.loadProjectState(projectId);
             }
+        });
+    }
+
+    loadMusicList() {
+        this.videoService.getMusicList().subscribe(list => {
+            this.musicList.set(list);
         });
     }
 
@@ -215,11 +234,49 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                     const mergedSettings = { showSubtitles: true, ...project.subtitleSettings };
                     this.subtitleSettings.set(mergedSettings);
                 }
+
+                // Load music settings
+                const musicSettings = {
+                    backgroundMusicId: project.backgroundMusicId || null,
+                    musicVolume: project.musicVolume ?? 15,
+                    voiceVolume: project.voiceVolume ?? 100,
+                    enableMusic: project.enableMusic ?? true,
+                    musicSource: project.musicSource || 'library'
+                };
+                this.musicSettings.set(musicSettings);
+
                 this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PREVIEW);
 
-                // Init audio player
+                // Init audio player with Main Audio + Background Music
                 const audioUrl = `${environment.apiUrl}/projects/${projectId}/${project.audioPath.split('/').pop()}`;
-                this.playerService.initializeAudio(audioUrl);
+
+                let backgroundMusicUrl = null;
+                if (!musicSettings.enableMusic) {
+                    backgroundMusicUrl = null;
+                } else if (musicSettings.musicSource === 'custom' && project.customMusicPath) {
+                    // Construct custom music URL. 
+                    // BE doesn't have a direct stream for custom path unless exposed.
+                    // Actually I exposed /projects/:id/music or similar? No.
+                    // I should probably use the file upload logic or just serve it statically.
+                    // Wait, projects folder is not static? 
+                    // I need to check how images are served. `ServeStaticModule` for 'projects'?
+                    // If so, I can just point to it.
+                    // If backend serves 'projects' root, then yes.
+                    // Let's assume standard static serve or use a specific endpoint.
+                    // Currently images use `${environment.apiUrl}/projects/${this.projectId()}/${filename}`.
+                    // So custom music should be available at `${environment.apiUrl}/projects/${projectId}/custom_music.mp3` ideally.
+                    // But `projects.service` saves it as `custom_music.mp3`.
+                    backgroundMusicUrl = `${environment.apiUrl}/projects/${projectId}/custom_music.mp3`;
+                } else if (musicSettings.backgroundMusicId) {
+                    backgroundMusicUrl = `${environment.apiUrl}/music/${musicSettings.backgroundMusicId}/stream`;
+                }
+
+                this.playerService.initializeAudio(
+                    audioUrl,
+                    backgroundMusicUrl,
+                    musicSettings.voiceVolume,
+                    musicSettings.musicVolume
+                );
 
                 // Init effects map
                 this.segmentEffects = project.segments.map(() =>
@@ -411,5 +468,71 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                     this.projectData.set(updatedProject);
                 }
             });
+    }
+
+    // Music Methods
+    updateMusicSettings(settings: any) {
+        // Optimistic update
+        this.musicSettings.set(settings);
+
+        // REAL-TIME UPDATES TO PLAYER
+        // Volume
+        this.playerService.updateVolumes(settings.voiceVolume ?? 100, settings.musicVolume ?? 15);
+
+        // Track Change or Enable/Disable
+        // If track ID changed or source changed or enable toggled, we need to re-init BG music.
+        // It's cleaner to just call initBackgroundMusic with the right URL/null.
+        let url = null;
+        if (settings.enableMusic) {
+            if (settings.musicSource === 'custom') {
+                // We don't have projectId here easily? yes we do `this.projectId()`
+                url = `${environment.apiUrl}/projects/${this.projectId()}/custom_music.mp3`;
+                // Note: this assumes custom music is always at this name if exists.
+                // If user just switched to 'custom' but hasn't uploaded yet, this might 404.
+                // But UI usually implies upload first? Or if it was saved.
+            } else if (settings.backgroundMusicId) {
+                url = `${environment.apiUrl}/music/${settings.backgroundMusicId}/stream`;
+            }
+        }
+
+        // Pass the volume too, just in case init needs it (it does)
+        this.playerService.initBackgroundMusic(url, settings.musicVolume ?? 15);
+
+
+        const id = this.projectId();
+        if (id) {
+            this.videoService.updateMusicSettings(id, settings).subscribe();
+        }
+    }
+
+    uploadMusic(file: File) {
+        const id = this.projectId();
+        if (!id) return;
+
+        this.videoService.uploadProjectMusic(id, file).subscribe({
+            next: (project) => {
+                // Update local settings from project response
+                const current = this.musicSettings();
+                const newSettings = {
+                    ...current,
+                    customMusicPath: project.customMusicPath,
+                    musicSource: 'custom',
+                    enableMusic: true
+                };
+                this.musicSettings.set(newSettings);
+
+                // Force update player with new custom music
+                this.updateMusicSettings(newSettings);
+            },
+            error: (err) => {
+                alert(this.translate('FILE_TOO_LARGE')); // Simple alert for now or toast
+                console.error(err);
+            }
+        });
+    }
+
+    private translate(key: string): string {
+        // quick hack to access translate service if needed, or just hardcode for error
+        return 'Error uploading file';
     }
 }

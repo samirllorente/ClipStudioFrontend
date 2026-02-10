@@ -1,6 +1,8 @@
 <div class="min-h-screen bg-[#0f172a] text-white font-['Outfit'] flex items-center justify-center p-4">
-    <app-subtitle-editor [isOpen]="subtitleEditorOpen()" [settings]="subtitleSettings()" (close)="closeSubtitleEditor()"
-        (settingsChange)="updateSubtitleSettingsLocal($event)" (saveSettings)="saveSubtitleSettings($event)">
+    <app-subtitle-editor [isOpen]="subtitleEditorOpen()" [settings]="subtitleSettings()" [musicList]="musicList()"
+        [musicSettings]="musicSettings()" (close)="closeSubtitleEditor()"
+        (settingsChange)="updateSubtitleSettingsLocal($event)" (saveSettings)="saveSubtitleSettings($event)"
+        (musicSettingsChange)="updateMusicSettings($event)" (uploadMusic)="uploadMusic($event)">
     </app-subtitle-editor>
 
     <div class="w-full max-w-5xl">
@@ -49,6 +51,10 @@
                 <app-subtitle-settings-panel [subtitleSettings]="subtitleSettings()"
                     (openSubtitleEditor)="openSubtitleEditor()" (toggleSubtitles)="toggleSubtitles($event)">
                 </app-subtitle-settings-panel>
+
+                <app-music-settings-panel [musicSettings]="musicSettings()" [musicList]="musicList()"
+                    (musicSettingsChange)="updateMusicSettings($event)" (uploadMusic)="uploadMusic($event)">
+                </app-music-settings-panel>
 
                 <app-thumbnail-editor [thumbnailUrl]="thumbnailUrl()" [prompt]="thumbnailPrompt()"
                     [isLoading]="isThumbnailLoading()" (regenerate)="regenerateThumbnail($event)"

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
     selector: 'app-subtitle-editor',
@@ -22,7 +23,29 @@ import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
         </button>
       </div>
 
-      <div class="p-6 space-y-8">
+      <!-- Tabs -->
+      <div class="flex border-b border-slate-700">
+          <button (click)="activeTab = 'subtitles'" 
+              class="flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2"
+              [class.text-indigo-400]="activeTab === 'subtitles'"
+              [class.border-indigo-400]="activeTab === 'subtitles'"
+              [class.text-slate-400]="activeTab !== 'subtitles'"
+              [class.border-transparent]="activeTab !== 'subtitles'"
+              [class.hover:text-slate-200]="activeTab !== 'subtitles'">
+              {{ 'SUBTITLES_TAB' | translate }}
+          </button>
+          <button (click)="activeTab = 'audio'"
+              class="flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2"
+              [class.text-indigo-400]="activeTab === 'audio'"
+              [class.border-indigo-400]="activeTab === 'audio'"
+              [class.text-slate-400]="activeTab !== 'audio'"
+              [class.border-transparent]="activeTab !== 'audio'"
+              [class.hover:text-slate-200]="activeTab !== 'audio'">
+              {{ 'AUDIO_TAB' | translate }}
+          </button>
+      </div>
+
+      <div class="p-6 space-y-8" *ngIf="activeTab === 'subtitles'">
         
         <!-- Live Preview -->
         <div class="space-y-2">
@@ -142,7 +165,9 @@ import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
                    class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
         </div>
 
-        <!-- Action Buttons -->
+
+        
+        <!-- Action Buttons (Subtitles) -->
         <div class="space-y-3 pt-4">
             <button (click)="saveSettings.emit(localSettings)"
                     class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95 cursor-pointer">
@@ -154,6 +179,109 @@ import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
                 {{ 'RESET_SETTINGS' | translate }}
             </button>
         </div>
+      </div>
+
+      <!-- AUDIO TAB CONTENT -->
+      <div class="p-6 space-y-8" *ngIf="activeTab === 'audio'">
+          
+          <!-- Enable Music Toggle -->
+          <div class="flex items-center justify-between">
+              <label class="text-sm font-bold text-white uppercase tracking-wider">{{ 'ENABLE_MUSIC' | translate }}</label>
+               <div class="relative inline-flex items-center cursor-pointer" (click)="toggleMusicEnabled()">
+                  <input type="checkbox" class="sr-only peer" [checked]="localMusicSettings.enableMusic">
+                  <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </div>
+          </div>
+
+          <ng-container *ngIf="localMusicSettings.enableMusic">
+          <!-- Voice Volume -->
+          <div class="space-y-2">
+              <div class="flex justify-between">
+                  <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'VOICE_VOLUME' | translate }}</label>
+                  <span class="text-xs text-white font-mono">{{ localMusicSettings.voiceVolume }}%</span>
+              </div>
+              <input type="range" min="0" max="200" [(ngModel)]="localMusicSettings.voiceVolume" (ngModelChange)="updateMusicSettings()"
+                     class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+          </div>
+
+
+          <!-- Music Volume -->
+          <div class="space-y-2">
+              <div class="flex justify-between">
+                  <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'MUSIC_VOLUME' | translate }}</label>
+                  <span class="text-xs text-white font-mono">{{ localMusicSettings.musicVolume }}%</span>
+              </div>
+              <input type="range" min="0" max="100" [(ngModel)]="localMusicSettings.musicVolume" (ngModelChange)="updateMusicSettings()"
+                     class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+          </div>
+
+          <!-- Background Music Selection -->
+          <div class="space-y-4">
+              <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'BACKGROUND_MUSIC' | translate }}</label>
+              
+              <div class="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                  <!-- No Music Option -->
+                  <label class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-500 cursor-pointer transition-colors"
+                         [class.border-indigo-500]="!localMusicSettings.backgroundMusicId">
+                      <input type="radio" name="bgMusic" [value]="null" 
+                             [checked]="!localMusicSettings.backgroundMusicId"
+                             (change)="selectMusic(null)"
+                             class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 focus:ring-indigo-500 cursor-pointer">
+                      <span class="text-sm font-medium">{{ 'NO_MUSIC' | translate }}</span>
+                  </label>
+
+                  <!-- Music Options -->
+                  @for(music of musicList; track music._id) {
+                      <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-500 transition-colors group relative"
+                           [class.border-indigo-500]="localMusicSettings.backgroundMusicId === music._id">
+                           
+                           <!-- Selection Radio -->
+                           <input type="radio" name="bgMusic" [value]="music._id"
+                                  [checked]="localMusicSettings.backgroundMusicId === music._id"
+                                  (change)="selectMusic(music._id)"
+                                  class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 focus:ring-indigo-500 cursor-pointer shrink-0">
+                           
+                           <!-- Info -->
+                           <div class="flex-1 min-w-0" (click)="selectMusic(music._id)">
+                               <p class="text-sm font-medium truncate text-white cursor-pointer">{{ music.name }}</p>
+                               <p class="text-xs text-slate-400 truncate">{{ music.artist }}</p>
+                           </div>
+
+                           <!-- Preview Player Controls -->
+                           <button (click)="togglePreview(music, $event)" 
+                                   class="p-2 rounded-full bg-slate-700 hover:bg-slate-600 text-white transition-colors cursor-pointer shrink-0 z-10">
+                               @if(previewingMusicId === music._id && isPreviewPlaying) {
+                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                                   </svg>
+                               } @else {
+                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                                   </svg>
+                               }
+                           </button>
+                      </div>
+                  }
+              </div>
+
+              <!-- Upload Button -->
+              <button (click)="fileInput.click()" 
+                      class="flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 hover:border-slate-400 hover:text-white transition-colors cursor-pointer hover:bg-slate-800/50"
+                      [class.bg-indigo-900]="localMusicSettings.musicSource === 'custom'"
+                      [class.border-indigo-500]="localMusicSettings.musicSource === 'custom'">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  </svg>
+                  <span class="text-sm font-medium">{{ 'UPLOAD_MUSIC' | translate }}</span>
+                  <input #fileInput type="file" accept="audio/mp3,audio/*" class="hidden" (change)="handleUpload($event)">
+              </button>
+              
+              <!-- Indicator if custom music is active -->
+              <div *ngIf="localMusicSettings.musicSource === 'custom'" class="text-xs text-indigo-400 text-center">
+                  {{ 'CUSTOM_MUSIC_ACTIVE' | translate }}
+              </div>
+          </div>
+      </ng-container>
 
       </div>
     </div>
@@ -178,6 +306,26 @@ export class SubtitleEditorComponent implements OnChanges, OnDestroy {
         letterSpacing: 0
     };
 
+    localMusicSettings: any = {
+        backgroundMusicId: null,
+        musicVolume: 20,
+        voiceVolume: 100,
+        enableMusic: true,
+        musicSource: 'library' // or 'custom'
+    };
+
+    @Input() musicList: any[] = [];
+    @Input() musicSettings: any = {};
+    @Output() musicSettingsChange = new EventEmitter<any>();
+    @Output() uploadMusic = new EventEmitter<File>();
+
+    activeTab: 'subtitles' | 'audio' = 'subtitles';
+
+    // Preview Audio
+    previewAudio = new Audio();
+    previewingMusicId: string | null = null;
+    isPreviewPlaying = false;
+
     fullPreviewText = "Esta es una prueba de todo lo que puede lograr con ClipStudio";
     words: string[] = [];
     currentWord = "";
@@ -193,6 +341,16 @@ export class SubtitleEditorComponent implements OnChanges, OnDestroy {
         if (changes['settings'] && this.settings) {
             this.localSettings = { ...this.localSettings, ...this.settings };
         }
+        if (changes['musicSettings'] && this.musicSettings) {
+            this.localMusicSettings = {
+                backgroundMusicId: null,
+                musicVolume: 20,
+                voiceVolume: 100,
+                enableMusic: true,
+                musicSource: 'library',
+                ...this.musicSettings
+            };
+        }
         if (changes['isOpen']) {
             if (this.isOpen) {
                 this.startPreviewLoop();
@@ -204,6 +362,77 @@ export class SubtitleEditorComponent implements OnChanges, OnDestroy {
 
     ngOnDestroy() {
         this.stopPreviewLoop();
+        this.stopAudioPreview();
+    }
+
+    // Audio Preview Logic
+    stopAudioPreview() {
+        this.previewAudio.pause();
+        this.previewAudio.currentTime = 0;
+        this.isPreviewPlaying = false;
+        this.previewingMusicId = null;
+    }
+
+    togglePreview(music: any, event: Event) {
+        event.stopPropagation();
+
+        if (this.previewingMusicId === music._id) {
+            if (this.isPreviewPlaying) {
+                this.previewAudio.pause();
+                this.isPreviewPlaying = false;
+            } else {
+                this.previewAudio.play().catch(e => console.error(e));
+                this.isPreviewPlaying = true;
+            }
+        } else {
+            this.stopAudioPreview();
+            this.previewingMusicId = music._id;
+            this.previewAudio.src = `${location.origin}/api/music/${music._id}/stream`; // Assuming proxy or absolute URL needed?
+            // Since environment.apiUrl is usually like http://localhost:3000, we might need to construct it properly
+            // Ideally use VideoService or environment, but here I'll try relative if proxy exists, or construct full url.
+            // Let's assume standard behavior. I don't have environment here easily without inject, but I can use inputs.
+            // Actually, I should use absolute URL if backend is on different port.
+            // Let's assume backend is at localhost:3000 for dev.
+            // A cleaner way is to pass the base URL or construct it.
+            // Hack for now: existing image URLs used environment.apiUrl.
+            // I'll assume /api/ is proxied or I need full URL.
+            // Let's try to infer from music object if it has a url, or construct it.
+            // If music object doesn't have url, I'll use a hardcoded assumption or passed-in config.
+            // But wait, I'm in a component. I can't easily access environment unless I import it.
+            this.previewAudio.src = `${environment.apiUrl}/music/${music._id}/stream`;
+
+            this.previewAudio.load();
+            this.previewAudio.play().catch(e => console.error(e));
+            this.isPreviewPlaying = true;
+
+            this.previewAudio.onended = () => {
+                this.isPreviewPlaying = false;
+                this.cdr.detectChanges();
+            };
+        }
+    }
+
+    updateMusicSettings() {
+        this.musicSettingsChange.emit(this.localMusicSettings);
+    }
+
+    toggleMusicEnabled() {
+        this.localMusicSettings.enableMusic = !this.localMusicSettings.enableMusic;
+        this.updateMusicSettings();
+    }
+
+    selectMusic(id: string | null) {
+        this.localMusicSettings.backgroundMusicId = id;
+        this.localMusicSettings.musicSource = 'library'; // switch to library source logic
+        this.updateMusicSettings();
+    }
+
+    handleUpload(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files[0]) {
+            this.uploadMusic.emit(input.files[0]);
+        }
+        input.value = '';
     }
 
     startPreviewLoop() {

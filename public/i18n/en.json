@@ -37,5 +37,20 @@
     "NO_THUMBNAIL": "No Thumbnail",
     "PROMPT": "Prompt",
     "NO_PROMPT_GENERATED": "No prompt generated",
-    "REGENERATE": "Regenerate"
+    "REGENERATE": "Regenerate",
+    "MUSIC_SETTINGS": "Audio Settings",
+    "VOICE_VOLUME": "Voice Volume",
+    "MUSIC_VOLUME": "Music Volume",
+    "BACKGROUND_MUSIC": "Background Music",
+    "NO_MUSIC": "No Music",
+    "UPLOAD_MUSIC": "Upload Music",
+    "FILE_TOO_LARGE": "File is too large (Max 20MB)",
+    "PLAY_PREVIEW": "Preview",
+    "PAUSE_PREVIEW": "Pause",
+    "AUDIO_TAB": "Audio",
+    "SUBTITLES_TAB": "Subtitles",
+    "ENABLE_MUSIC": "Enable Music",
+    "CUSTOM_MUSIC_ACTIVE": "Custom music active",
+    "MUSIC_SETTINGS_DESC": "Adjust volume and select background music.",
+    "UPLOAD": "Upload"
 }

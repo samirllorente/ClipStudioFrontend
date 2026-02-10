@@ -12,6 +12,7 @@ export class VideoService {
     // Default NestJS port is usually 3000
     // Note: Project related endpoints might be under /projects in backend, but let's assume consistent API usage
     private projectsUrl = `${environment.apiUrl}/projects`;
+    private musicUrl = `${environment.apiUrl}/music`;
     private apiUrl = `${environment.apiUrl}/scripts/process`;
 
     generateVideo(script: string): Observable<VideoResponse> {
@@ -53,5 +54,25 @@ export class VideoService {
 
     renderVideo(id: string, options?: any): Observable<any> {
         return this.http.post<any>(`${this.projectsUrl}/${id}/render`, options || {});
+    }
+
+    getMusicList(): Observable<any[]> {
+        return this.http.get<any[]>(this.musicUrl);
+    }
+
+    uploadMusic(file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<any>(`${this.musicUrl}/upload`, formData);
+    }
+
+    updateMusicSettings(id: string, settings: any): Observable<any> {
+        return this.http.put<any>(`${this.projectsUrl}/${id}/music-settings`, settings);
+    }
+
+    uploadProjectMusic(projectId: string, file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<any>(`${this.projectsUrl}/${projectId}/music/upload`, formData);
     }
 }
