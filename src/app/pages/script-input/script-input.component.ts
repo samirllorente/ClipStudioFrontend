@@ -4,8 +4,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { VideoService } from '../../core/services/video.service';
 import { SocketService } from '../../core/services/socket.service';
 import { PlayerService } from '../../core/services/player.service';
-import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 import { VIDEO_CONSTANTS, ProcessingStatus } from '../../core/constants/video.constants';
@@ -76,6 +76,8 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         musicFadeOut: 0
     });
 
+    private musicSettingsSubject = new Subject<any>();
+
     processingStatus = signal<ProcessingStatus>(VIDEO_CONSTANTS.STATUS.INPUT);
     projectData = signal<any>(null);
 
@@ -113,6 +115,17 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
             if (projectId) {
                 this.projectId.set(projectId);
                 this.loadProjectState(projectId);
+            }
+        });
+
+        // Setup debounced music settings updates
+        this.musicSettingsSubject.pipe(
+            debounceTime(500),
+            distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+        ).subscribe(settings => {
+            const id = this.projectId();
+            if (id) {
+                this.videoService.updateMusicSettings(id, settings).subscribe();
             }
         });
     }
@@ -514,11 +527,8 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         // Pass the volume too, just in case init needs it (it does)
         this.playerService.initBackgroundMusic(url, settings.musicVolume ?? 15);
 
-
-        const id = this.projectId();
-        if (id) {
-            this.videoService.updateMusicSettings(id, settings).subscribe();
-        }
+        // Debounce backend call
+        this.musicSettingsSubject.next(settings);
     }
 
     uploadMusic(file: File) {
