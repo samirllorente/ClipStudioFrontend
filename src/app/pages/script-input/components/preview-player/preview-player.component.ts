@@ -6,61 +6,8 @@ import { TranslateModule } from '@ngx-translate/core';
     selector: 'app-preview-player',
     standalone: true,
     imports: [CommonModule, TranslateModule],
-    template: `
-    <div class="flex flex-col items-center">
-        <div class="relative w-[360px] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-800 mb-6 group/player">
-
-            <!-- Layer 1: Previous Image (during transition) -->
-            @if (previousImage) {
-            <div class="absolute inset-0 z-10 transition-opacity duration-1000 ease-in-out opacity-0">
-                <img [src]="previousImage" class="w-full h-full object-cover">
-            </div>
-            }
-
-            <!-- Layer 0: Active Image -->
-            <div class="absolute inset-0 z-0">
-                <img [src]="activeImage" class="w-full h-full object-cover transform origin-center"
-                    [ngClass]="currentEffect"
-                    [style.animation-play-state]="isPlaying ? 'running' : 'paused'">
-            </div>
-
-            <!-- Subtitle Overlay -->
-            @if(showSubtitles) {
-                <!-- Position container relative to height -->
-                <div class="absolute left-0 right-0 z-20 px-6 text-center transition-all duration-300 pointer-events-none"
-                     [style.top.%]="subtitleSettings.yPosition"
-                     style="transform: translateY(-50%);">
-                    <p class="drop-shadow-xl leading-tight"
-                        [style.color]="subtitleSettings.color"
-                        [style.font-family]="subtitleSettings.fontFamily"
-                        [style.font-size.px]="subtitleSettings.fontSize"
-                        [style.letter-spacing.px]="subtitleSettings.letterSpacing"
-                        style="-webkit-text-stroke: 1px black; text-shadow: 2px 2px 0 #000; paint-order: stroke fill;">
-                        {{ activeSubtitle }}
-                    </p>
-                </div>
-            }
-
-            <!-- Controls Overlay -->
-            <div class="absolute inset-0 z-30 flex items-center justify-center bg-black/10 hover:bg-black/40 transition-colors cursor-pointer"
-                (click)="togglePlay.emit()">
-                <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform opacity-0 group-hover/player:opacity-100">
-                    @if (isPlaying) {
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-                    </svg>
-                    } @else {
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 ml-1">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-                    </svg>
-                    }
-                </div>
-            </div>
-            
-
-        </div>
-    </div>
-  `
+    templateUrl: './preview-player.component.html',
+    styleUrl: './preview-player.component.css'
 })
 export class PreviewPlayerComponent {
     @Input() activeImage: string | null = null;

@@ -7,77 +7,8 @@ import { TranslateModule } from '@ngx-translate/core';
     selector: 'app-thumbnail-editor',
     standalone: true,
     imports: [CommonModule, TranslateModule, FormsModule],
-    template: `
-    <div class="bg-slate-900/50 rounded-xl p-6 border border-slate-700/50 mb-6 relative overflow-hidden">
-        <!-- Background decoration -->
-        <div class="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2 relative z-10">
-            <span class="p-2 bg-yellow-500/10 rounded-lg text-yellow-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                </svg>
-            </span>
-            {{ 'THUMBNAIL_EDITOR' | translate }}
-        </h3>
-        
-        <div class="flex flex-col md:flex-row gap-8 items-stretch relative z-10">
-            <!-- Image Area -->
-            <div class="relative group w-full md:w-2/5 aspect-[9/16] bg-slate-800 rounded-lg overflow-hidden border border-slate-700 shadow-xl shrink-0 transition-transform hover:scale-[1.02] duration-300">
-                <img [src]="thumbnailUrl" alt="Thumbnail" class="w-full h-full object-cover" *ngIf="thumbnailUrl; else noThumb">
-                <ng-template #noThumb>
-                    <div class="w-full h-full flex flex-col items-center justify-center text-slate-500 text-xs p-4 text-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 opacity-50">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        {{ 'NO_THUMBNAIL' | translate }}
-                    </div>
-                </ng-template>
-
-                <!-- Loading Overlay -->
-                 <div *ngIf="isLoading" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center z-20 backdrop-blur-sm">
-                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-3"></div>
-                    <span class="text-xs text-indigo-400 font-bold tracking-wider animate-pulse">{{ 'GENERATING' | translate }}...</span>
-                 </div>
-            </div>
-
-            <!-- Controls -->
-            <div class="flex flex-col gap-6 w-full md:w-3/5">
-                <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700/50 flex-1 flex flex-col">
-                    <div class="flex items-center gap-2 mb-3 shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-slate-400">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-                        </svg>
-                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">{{ 'PROMPT' | translate }}</p>
-                    </div>
-                    <textarea [(ngModel)]="prompt" [disabled]="isLoading"
-                        class="w-full h-full flex-1 bg-slate-700/50 rounded-lg p-3 text-sm text-slate-200 border border-slate-600 focus:border-indigo-500 outline-none resize-none transition-colors disabled:opacity-50">
-                    </textarea>
-                </div>
-
-                <div class="flex flex-wrap gap-4">
-                     <button (click)="onRegenerate()" [disabled]="isLoading || !prompt"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-all font-semibold shadow-lg shadow-indigo-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                        {{ 'REGENERATE' | translate }}
-                     </button>
-
-                     <button (click)="fileInput.click()" [disabled]="isLoading"
-                        class="flex items-center gap-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all font-semibold shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                        </svg>
-                        {{ 'UPLOAD_IMAGE' | translate }}
-                     </button>
-                     <input #fileInput type="file" accept="image/*" class="hidden" (change)="handleUpload($event)">
-                </div>
-            </div>
-        </div>
-    </div>
-    `,
-    styles: []
+    templateUrl: './thumbnail-editor.component.html',
+    styleUrl: './thumbnail-editor.component.css'
 })
 export class ThumbnailEditorComponent {
     @Input() thumbnailUrl: string | null = null;
