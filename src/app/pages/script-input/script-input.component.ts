@@ -46,7 +46,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
 
     // Subtitle Settings State
     subtitleSettings = signal<any>({
-        fontSize: 22,
+        fontSize: 30,
         fontFamily: 'Permanent Marker',
         color: VIDEO_CONSTANTS.DEFAULT_SUBTITLE_COLOR,
         yPosition: 50,

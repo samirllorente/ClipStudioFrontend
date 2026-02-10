@@ -171,7 +171,7 @@ export class SubtitleEditorComponent implements OnChanges, OnDestroy {
     @Output() saveSettings = new EventEmitter<any>();   // Persistence emission
 
     localSettings: any = {
-        fontSize: 22,
+        fontSize: 30,
         fontFamily: 'Permanent Marker',
         color: '#F4D03F',
         yPosition: 50,
@@ -260,7 +260,7 @@ export class SubtitleEditorComponent implements OnChanges, OnDestroy {
 
     resetSettings() {
         this.localSettings = {
-            fontSize: 22,
+            fontSize: 30,
             fontFamily: 'Permanent Marker',
             color: '#F4D03F', // Default Yellow
             yPosition: 50,
