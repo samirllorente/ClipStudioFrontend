@@ -37,7 +37,7 @@ import { environment } from '../../../../../environments/environment';
                           <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'VOICE_VOLUME' | translate }}</label>
                           <span class="text-xs text-white font-mono">{{ musicSettings.voiceVolume }}%</span>
                       </div>
-                      <input type="range" min="0" max="200" [(ngModel)]="localVoiceVolume" (ngModelChange)="updateVolume('voice')"
+                      <input type="range" min="0" max="100" [(ngModel)]="localVoiceVolume" (ngModelChange)="updateVolume('voice')"
                              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                   </div>
 
