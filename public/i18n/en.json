@@ -52,5 +52,7 @@
     "ENABLE_MUSIC": "Enable Music",
     "CUSTOM_MUSIC_ACTIVE": "Custom music active",
     "MUSIC_SETTINGS_DESC": "Adjust volume and select background music.",
-    "UPLOAD": "Upload"
+    "UPLOAD": "Upload",
+    "FADE_IN": "Fade In",
+    "FADE_OUT": "Fade Out"
 }

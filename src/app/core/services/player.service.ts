@@ -15,27 +15,38 @@ export class PlayerService {
 
     // Background Music State
     private bgAudioElement: HTMLAudioElement | null = null;
-    bgVolume = signal(0.15); // Default 15%
+    private baseMusicVolume: number = 0.15;
+    private fadeIn: number = 0;
+    private fadeOut: number = 0;
+    private totalDuration: number = 0;
 
-    initializeAudio(voiceUrl: string, musicUrl?: string | null, voiceVolume: number = 100, musicVolume: number = 15) {
+    initializeAudio(voiceUrl: string, musicUrl: string | null | undefined, settings: { voiceVolume: number, musicVolume: number, fadeIn: number, fadeOut: number, duration: number }) {
         // Voice Audio
         if (this.audioElement) {
             this.audioElement.src = voiceUrl;
-            this.audioElement.volume = voiceVolume / 100;
+            this.audioElement.volume = settings.voiceVolume / 100;
         } else {
             this.audioElement = new Audio(voiceUrl);
-            this.audioElement.volume = voiceVolume / 100;
+            this.audioElement.volume = settings.voiceVolume / 100;
             this.setupListeners();
         }
 
+        // Fades
+        this.fadeIn = settings.fadeIn;
+        this.fadeOut = settings.fadeOut;
+        this.totalDuration = settings.duration;
+        this.baseMusicVolume = settings.musicVolume / 100;
+
         // Background Music
-        this.initBackgroundMusic(musicUrl, musicVolume);
+        this.initBackgroundMusic(musicUrl, settings.musicVolume);
 
         // Reset state
         this.reset();
     }
 
     initBackgroundMusic(musicUrl: string | null | undefined, volume: number) {
+        this.baseMusicVolume = volume / 100;
+
         if (!musicUrl) {
             if (this.bgAudioElement) {
                 this.bgAudioElement.pause();
@@ -53,31 +64,58 @@ export class PlayerService {
                     this.bgAudioElement.play().catch(e => console.error("Error playing BG:", e));
                 }
             }
-            this.bgAudioElement.volume = volume / 100;
+            this.applyFades(this.audioElement ? this.audioElement.currentTime : 0);
         } else {
             this.bgAudioElement = new Audio(musicUrl);
             this.bgAudioElement.loop = true; // Loop background music
-            this.bgAudioElement.volume = volume / 100;
+            this.applyFades(this.audioElement ? this.audioElement.currentTime : 0);
             if (this.isPlaying()) {
                 this.bgAudioElement.play().catch(e => console.error("Error playing BG:", e));
             }
         }
     }
 
+    updateFadeSettings(settings: { fadeIn: number, fadeOut: number, duration: number }) {
+        this.fadeIn = settings.fadeIn;
+        this.fadeOut = settings.fadeOut;
+        this.totalDuration = settings.duration;
+        this.applyFades(this.audioElement ? this.audioElement.currentTime : 0);
+    }
+
     updateVolumes(voiceVolume: number, musicVolume: number) {
+        this.baseMusicVolume = musicVolume / 100;
         if (this.audioElement) {
             this.audioElement.volume = voiceVolume / 100;
         }
-        if (this.bgAudioElement) {
-            this.bgAudioElement.volume = musicVolume / 100;
+        this.applyFades(this.audioElement ? this.audioElement.currentTime : 0);
+    }
+
+    private applyFades(time: number) {
+        if (!this.bgAudioElement) return;
+
+        let multiplier = 1;
+
+        // Fade In
+        if (this.fadeIn > 0 && time < this.fadeIn) {
+            multiplier = time / this.fadeIn;
         }
+        // Fade Out
+        else if (this.fadeOut > 0 && this.totalDuration > 0 && time > (this.totalDuration - this.fadeOut)) {
+            const fadeOutStart = this.totalDuration - this.fadeOut;
+            multiplier = 1 - ((time - fadeOutStart) / this.fadeOut);
+        }
+
+        multiplier = Math.max(0, Math.min(1, multiplier));
+        this.bgAudioElement.volume = this.baseMusicVolume * multiplier;
     }
 
     private setupListeners() {
         if (!this.audioElement) return;
 
         this.audioElement.addEventListener('timeupdate', () => {
-            this.currentTime.set(this.audioElement!.currentTime);
+            const time = this.audioElement!.currentTime;
+            this.currentTime.set(time);
+            this.applyFades(time);
         });
 
         this.audioElement.addEventListener('ended', () => {

@@ -52,5 +52,7 @@
     "ENABLE_MUSIC": "Activar Música",
     "CUSTOM_MUSIC_ACTIVE": "Música personalizada activa",
     "MUSIC_SETTINGS_DESC": "Ajusta el volumen y selecciona la música de fondo.",
-    "UPLOAD": "Subir"
+    "UPLOAD": "Subir",
+    "FADE_IN": "Aparición (Fundido)",
+    "FADE_OUT": "Desaparición (Fundido)"
 }

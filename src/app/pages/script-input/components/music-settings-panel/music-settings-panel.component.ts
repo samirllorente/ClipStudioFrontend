@@ -50,6 +50,26 @@ import { environment } from '../../../../../environments/environment';
                       <input type="range" min="0" max="100" [(ngModel)]="localMusicVolume" (ngModelChange)="updateVolume('music')"
                              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                   </div>
+
+                  <!-- Fade Controls -->
+                  <div class="grid grid-cols-2 gap-4 pt-2">
+                      <div class="space-y-2">
+                          <div class="flex justify-between">
+                              <label class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">{{ 'FADE_IN' | translate }}</label>
+                              <span class="text-[10px] text-white font-mono">{{ localMusicFadeIn.toFixed(1) }}s</span>
+                          </div>
+                          <input type="range" min="0" max="10" step="0.1" [(ngModel)]="localMusicFadeIn" (ngModelChange)="updateFade('fadeIn')"
+                                 class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-400">
+                      </div>
+                      <div class="space-y-2">
+                          <div class="flex justify-between">
+                              <label class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">{{ 'FADE_OUT' | translate }}</label>
+                              <span class="text-[10px] text-white font-mono">{{ localMusicFadeOut.toFixed(1) }}s</span>
+                          </div>
+                          <input type="range" min="0" max="10" step="0.1" [(ngModel)]="localMusicFadeOut" (ngModelChange)="updateFade('fadeOut')"
+                                 class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-400">
+                      </div>
+                  </div>
               </div>
 
               <!-- Selection & List -->
@@ -113,7 +133,7 @@ import { environment } from '../../../../../environments/environment';
                                      
                                      <!-- Preview Button -->
                                      <button (click)="togglePreview(music, $event)" 
-                                             class="p-2 rounded-full hover:bg-slate-600/50 text-indigo-400 hover:text-indigo-300 transition-all transform hover:scale-110 focus:outline-none"
+                                             class="p-2 rounded-full hover:bg-slate-600/50 text-indigo-400 hover:text-indigo-300 transition-all transform hover:scale-110 focus:outline-none cursor-pointer"
                                              [title]="(previewingId === music._id ? 'PAUSE_PREVIEW' : 'PLAY_PREVIEW') | translate">
                                          <svg *ngIf="previewingId !== music._id" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                                              <path d="M8 5v14l11-7z" />
@@ -167,6 +187,8 @@ export class MusicSettingsPanelComponent implements OnChanges {
 
     localVoiceVolume: number = 100;
     localMusicVolume: number = 15;
+    localMusicFadeIn: number = 0;
+    localMusicFadeOut: number = 0;
 
     // Preview State
     previewingId: string | null = null;
@@ -176,6 +198,8 @@ export class MusicSettingsPanelComponent implements OnChanges {
         if (changes['musicSettings'] && this.musicSettings) {
             this.localVoiceVolume = this.musicSettings.voiceVolume ?? 100;
             this.localMusicVolume = this.musicSettings.musicVolume ?? 15;
+            this.localMusicFadeIn = this.musicSettings.musicFadeIn ?? 0;
+            this.localMusicFadeOut = this.musicSettings.musicFadeOut ?? 0;
         }
     }
 
@@ -191,6 +215,16 @@ export class MusicSettingsPanelComponent implements OnChanges {
         } else {
             this.musicSettings.musicVolume = this.localMusicVolume;
             this.emitChange({ musicVolume: this.localMusicVolume });
+        }
+    }
+
+    updateFade(type: 'fadeIn' | 'fadeOut') {
+        if (type === 'fadeIn') {
+            this.musicSettings.musicFadeIn = this.localMusicFadeIn;
+            this.emitChange({ musicFadeIn: this.localMusicFadeIn });
+        } else {
+            this.musicSettings.musicFadeOut = this.localMusicFadeOut;
+            this.emitChange({ musicFadeOut: this.localMusicFadeOut });
         }
     }
 

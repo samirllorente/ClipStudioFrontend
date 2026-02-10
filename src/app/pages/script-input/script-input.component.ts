@@ -71,7 +71,9 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         musicVolume: 15,
         voiceVolume: 100,
         enableMusic: true,
-        musicSource: 'library'
+        musicSource: 'library',
+        musicFadeIn: 0,
+        musicFadeOut: 0
     });
 
     processingStatus = signal<ProcessingStatus>(VIDEO_CONSTANTS.STATUS.INPUT);
@@ -241,7 +243,9 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                     musicVolume: project.musicVolume ?? 15,
                     voiceVolume: project.voiceVolume ?? 100,
                     enableMusic: project.enableMusic ?? true,
-                    musicSource: project.musicSource || 'library'
+                    musicSource: project.musicSource || 'library',
+                    musicFadeIn: project.musicFadeIn ?? 0,
+                    musicFadeOut: project.musicFadeOut ?? 0
                 };
                 this.musicSettings.set(musicSettings);
 
@@ -274,8 +278,13 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                 this.playerService.initializeAudio(
                     audioUrl,
                     backgroundMusicUrl,
-                    musicSettings.voiceVolume,
-                    musicSettings.musicVolume
+                    {
+                        voiceVolume: musicSettings.voiceVolume,
+                        musicVolume: musicSettings.musicVolume,
+                        fadeIn: musicSettings.musicFadeIn,
+                        fadeOut: musicSettings.musicFadeOut,
+                        duration: project.audioDuration || 15
+                    }
                 );
 
                 // Init effects map
@@ -478,6 +487,13 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         // REAL-TIME UPDATES TO PLAYER
         // Volume
         this.playerService.updateVolumes(settings.voiceVolume ?? 100, settings.musicVolume ?? 15);
+
+        // Fades
+        this.playerService.updateFadeSettings({
+            fadeIn: settings.musicFadeIn ?? 0,
+            fadeOut: settings.musicFadeOut ?? 0,
+            duration: this.projectData()?.audioDuration ?? 15
+        });
 
         // Track Change or Enable/Disable
         // If track ID changed or source changed or enable toggled, we need to re-init BG music.
