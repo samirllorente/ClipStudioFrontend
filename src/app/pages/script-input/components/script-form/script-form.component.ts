@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,7 +8,8 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './script-form.component.html',
-  styleUrl: './script-form.component.css'
+  styleUrl: './script-form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScriptFormComponent {
   @Input() isSubmitting = false;

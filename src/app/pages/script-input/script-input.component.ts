@@ -353,7 +353,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
     private getImageUrl(imagePath: string): string {
         if (!imagePath) return '';
         const filename = imagePath.split('/').pop();
-        return `${environment.apiUrl}/projects/${this.projectId()}/${filename}?t=${new Date().getTime()}`;
+        return `${environment.apiUrl}/projects/${this.projectId()}/${filename}`;
     }
 
     private updatePreviewState(time: number) {

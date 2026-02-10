@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,7 +8,8 @@ import { TranslateModule } from '@ngx-translate/core';
     standalone: true,
     imports: [CommonModule, TranslateModule, FormsModule],
     templateUrl: './thumbnail-editor.component.html',
-    styleUrl: './thumbnail-editor.component.css'
+    styleUrl: './thumbnail-editor.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThumbnailEditorComponent {
     @Input() thumbnailUrl: string | null = null;

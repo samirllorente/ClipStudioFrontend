@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -9,7 +9,8 @@ import { environment } from '../../../../../environments/environment';
     standalone: true,
     imports: [CommonModule, FormsModule, TranslateModule],
     templateUrl: './music-settings-panel.component.html',
-    styleUrl: './music-settings-panel.component.css'
+    styleUrl: './music-settings-panel.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MusicSettingsPanelComponent implements OnChanges {
     @Input() musicSettings: any = {};

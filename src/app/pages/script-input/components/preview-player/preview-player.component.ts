@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -7,7 +7,8 @@ import { TranslateModule } from '@ngx-translate/core';
     standalone: true,
     imports: [CommonModule, TranslateModule],
     templateUrl: './preview-player.component.html',
-    styleUrl: './preview-player.component.css'
+    styleUrl: './preview-player.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreviewPlayerComponent {
     @Input() activeImage: string | null = null;

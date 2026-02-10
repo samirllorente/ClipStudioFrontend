@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,7 +10,8 @@ import { environment } from '../../../../../environments/environment';
     standalone: true,
     imports: [CommonModule, FormsModule, TranslateModule],
     templateUrl: './subtitle-editor.component.html',
-    styleUrl: './subtitle-editor.component.css'
+    styleUrl: './subtitle-editor.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SubtitleEditorComponent implements OnChanges, OnDestroy {
     @Input() isOpen = false;

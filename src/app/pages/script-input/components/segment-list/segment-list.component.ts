@@ -1,16 +1,18 @@
-import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../../environments/environment';
 import { VIDEO_CONSTANTS } from '../../../../core/constants/video.constants';
+import { ImageUrlPipe } from '../../../../core/pipes/image-url.pipe';
 
 @Component({
     selector: 'app-segment-list',
     standalone: true,
-    imports: [CommonModule, FormsModule, TranslateModule],
+    imports: [CommonModule, FormsModule, TranslateModule, ImageUrlPipe],
     templateUrl: './segment-list.component.html',
-    styleUrl: './segment-list.component.css'
+    styleUrl: './segment-list.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SegmentListComponent {
     @Input() projectData: any;
@@ -29,11 +31,6 @@ export class SegmentListComponent {
         this.toggleSubtitles.emit(event.target.checked);
     } */
 
-    getImageUrl(imagePath: string): string {
-        if (!imagePath || !this.projectId) return '';
-        const filename = imagePath.split('/').pop();
-        return `${environment.apiUrl}/projects/${this.projectId}/${filename}?t=${new Date().getTime()}`;
-    }
 
     getSegmentSubtitles(segmentIndex: number): any[] {
         if (!this.projectData) return [];
