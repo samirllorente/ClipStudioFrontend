@@ -31,5 +31,11 @@
     "SUBTITLE_SETTINGS_DESC": "Personaliza la fuente, color, posición y espaciado.",
     "SUBTITLES_HEADER": "Subtítulos",
     "SHOW_SUBTITLES": "Mostrar Subtítulos",
-    "RESET_SETTINGS": "Restaurar Valores"
+    "RESET_SETTINGS": "Restaurar Valores",
+    "GENERATING": "Generando",
+    "THUMBNAIL_EDITOR": "Editor de Portada",
+    "NO_THUMBNAIL": "Sin portada",
+    "PROMPT": "Prompt",
+    "NO_PROMPT_GENERATED": "No se generó ningún prompt",
+    "REGENERATE": "Regenerar"
 }

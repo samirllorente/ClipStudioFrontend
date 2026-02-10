@@ -16,6 +16,8 @@ import { SegmentListComponent } from './components/segment-list/segment-list.com
 import { VideoResultComponent } from './components/video-result/video-result.component';
 
 import { SubtitleEditorComponent } from './components/subtitle-editor/subtitle-editor.component';
+import { ThumbnailEditorComponent } from './components/thumbnail-editor/thumbnail-editor.component';
+import { SubtitleSettingsPanelComponent } from './components/subtitle-settings-panel/subtitle-settings-panel.component';
 
 @Component({
     selector: 'app-script-input',
@@ -27,7 +29,10 @@ import { SubtitleEditorComponent } from './components/subtitle-editor/subtitle-e
         PreviewPlayerComponent,
         SegmentListComponent,
         VideoResultComponent,
-        SubtitleEditorComponent
+        VideoResultComponent,
+        SubtitleEditorComponent,
+        ThumbnailEditorComponent,
+        SubtitleSettingsPanelComponent
     ],
     templateUrl: './script-input.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,6 +64,14 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
 
     processingStatus = signal<ProcessingStatus>(VIDEO_CONSTANTS.STATUS.INPUT);
     projectData = signal<any>(null);
+
+    // Thumbnail state
+    thumbnailUrl = computed(() => {
+        const project = this.projectData();
+        return project?.thumbnailPath ? this.getImageUrl(project.thumbnailPath) : null;
+    });
+    thumbnailPrompt = computed(() => this.projectData()?.thumbnailPrompt || '');
+    isThumbnailLoading = signal(false);
 
     // Derived view state
     activeImage = signal<string | null>(null);
@@ -370,5 +383,33 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                 }
             });
         }
+    }
+
+    regenerateThumbnail(prompt?: string) {
+        const id = this.projectId();
+        if (!id) return;
+
+        this.isThumbnailLoading.set(true);
+        this.videoService.regenerateThumbnail(id, prompt)
+            .pipe(finalize(() => this.isThumbnailLoading.set(false)))
+            .subscribe(updatedProject => {
+                if (updatedProject) {
+                    this.projectData.set(updatedProject);
+                }
+            });
+    }
+
+    uploadThumbnail(file: File) {
+        const id = this.projectId();
+        if (!id) return;
+
+        this.isThumbnailLoading.set(true);
+        this.videoService.uploadThumbnail(id, file)
+            .pipe(finalize(() => this.isThumbnailLoading.set(false)))
+            .subscribe(updatedProject => {
+                if (updatedProject) {
+                    this.projectData.set(updatedProject);
+                }
+            });
     }
 }

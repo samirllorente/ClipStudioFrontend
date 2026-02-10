@@ -31,5 +31,11 @@
     "SUBTITLE_SETTINGS_DESC": "Customize font, color, position and spacing.",
     "SUBTITLES_HEADER": "Subtitles",
     "SHOW_SUBTITLES": "Show Subtitles",
-    "RESET_SETTINGS": "Reset Defaults"
+    "RESET_SETTINGS": "Reset Defaults",
+    "GENERATING": "Generating",
+    "THUMBNAIL_EDITOR": "Thumbnail Editor",
+    "NO_THUMBNAIL": "No Thumbnail",
+    "PROMPT": "Prompt",
+    "NO_PROMPT_GENERATED": "No prompt generated",
+    "REGENERATE": "Regenerate"
 }

@@ -41,6 +41,16 @@ export class VideoService {
         return this.http.post<any>(`${this.projectsUrl}/${projectId}/segment/${segmentIndex}/image-upload`, formData);
     }
 
+    regenerateThumbnail(id: string, prompt?: string): Observable<any> {
+        return this.http.put<any>(`${this.projectsUrl}/${id}/thumbnail/regenerate`, { prompt });
+    }
+
+    uploadThumbnail(id: string, file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<any>(`${this.projectsUrl}/${id}/thumbnail/upload`, formData);
+    }
+
     renderVideo(id: string, options?: any): Observable<any> {
         return this.http.post<any>(`${this.projectsUrl}/${id}/render`, options || {});
     }

@@ -46,9 +46,17 @@
                     (toggleSubtitles)="toggleSubtitles($event)">
                 </app-preview-player>
 
+                <app-subtitle-settings-panel [subtitleSettings]="subtitleSettings()"
+                    (openSubtitleEditor)="openSubtitleEditor()" (toggleSubtitles)="toggleSubtitles($event)">
+                </app-subtitle-settings-panel>
+
+                <app-thumbnail-editor [thumbnailUrl]="thumbnailUrl()" [prompt]="thumbnailPrompt()"
+                    [isLoading]="isThumbnailLoading()" (regenerate)="regenerateThumbnail($event)"
+                    (upload)="uploadThumbnail($event)">
+                </app-thumbnail-editor>
+
                 <app-segment-list [projectData]="projectData()" [projectId]="projectId()"
-                    [subtitleSettings]="subtitleSettings()" (openSubtitleEditor)="openSubtitleEditor()"
-                    (toggleSubtitles)="toggleSubtitles($event)"
+                    [subtitleSettings]="subtitleSettings()"
                     (regenerateImage)="regenerateImage($event.index, $event.prompt)"
                     (uploadImage)="uploadImage($event.index, $event.file)" (updateSubtitle)="updateSubtitle()">
                 </app-segment-list>
