@@ -55,5 +55,9 @@
     "MUSIC_SETTINGS_DESC": "Adjust volume and select background music.",
     "UPLOAD": "Upload",
     "FADE_IN": "Fade In",
-    "FADE_OUT": "Fade Out"
+    "FADE_OUT": "Fade Out",
+    "GENERATION_FAILED": "Video Generation Failed",
+    "FAILED_MSG": "Something went wrong during the process. You can try to resume the project or start a new one.",
+    "NEW_PROJECT": "New Project",
+    "RESUME_PROJECT": "Resume Project"
 }

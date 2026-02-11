@@ -158,7 +158,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PROCESSING);
                 } else if (project.status === 'failed') {
                     this.errorMessage.set('VIDEO_GENERATION_FAILED');
-                    // Maybe show input again but with error?
+                    this.processingStatus.set(VIDEO_CONSTANTS.STATUS.FAILED);
                 }
 
                 // Re-join socket
@@ -238,7 +238,26 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
             this.processingStatus.set(VIDEO_CONSTANTS.STATUS.COMPLETED);
         } else if (data.status === 'failed') {
             this.errorMessage.set('VIDEO_GENERATION_FAILED');
-            this.processingStatus.set(VIDEO_CONSTANTS.STATUS.INPUT);
+            this.processingStatus.set(VIDEO_CONSTANTS.STATUS.FAILED);
+        }
+    }
+
+    handleResume() {
+        const id = this.projectId();
+        if (id) {
+            this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PROCESSING);
+            this.errorMessage.set(null);
+            this.videoService.resumeGeneration(id).subscribe({
+                next: () => {
+                    console.log('Resuming project:', id);
+                    // Socket should handle updates
+                },
+                error: (err) => {
+                    console.error('Error resuming:', err);
+                    this.errorMessage.set('ERROR_RESUMING');
+                    this.processingStatus.set(VIDEO_CONSTANTS.STATUS.FAILED);
+                }
+            });
         }
     }
 

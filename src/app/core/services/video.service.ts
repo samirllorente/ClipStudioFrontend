@@ -74,4 +74,8 @@ export class VideoService {
         formData.append('file', file);
         return this.http.post<any>(`${this.projectsUrl}/${projectId}/music/upload`, formData);
     }
+
+    resumeGeneration(id: string): Observable<any> {
+        return this.http.post<any>(`${environment.apiUrl}/scripts/resume/${id}`, {});
+    }
 }

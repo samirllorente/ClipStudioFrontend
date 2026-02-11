@@ -55,5 +55,9 @@
     "MUSIC_SETTINGS_DESC": "Ajusta el volumen y selecciona la música de fondo.",
     "UPLOAD": "Subir",
     "FADE_IN": "Aparición (Fundido)",
-    "FADE_OUT": "Desaparición (Fundido)"
+    "FADE_OUT": "Desaparición (Fundido)",
+    "GENERATION_FAILED": "Falló la Generación del Video",
+    "FAILED_MSG": "Algo salió mal durante el proceso. Puedes intentar reanudar el proyecto o comenzar uno nuevo.",
+    "NEW_PROJECT": "Nuevo Proyecto",
+    "RESUME_PROJECT": "Reanudar Proyecto"
 }
