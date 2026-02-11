@@ -120,8 +120,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
 
         // Setup debounced music settings updates
         this.musicSettingsSubject.pipe(
-            debounceTime(500),
-            distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+            debounceTime(500)
         ).subscribe(settings => {
             const id = this.projectId();
             if (id) {
@@ -413,7 +412,10 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         const id = this.projectId();
         if (!id) return;
         this.processingStatus.set(VIDEO_CONSTANTS.STATUS.GENERATING);
-        this.videoService.renderVideo(id, { subtitleSettings: this.subtitleSettings() }).subscribe(() => {
+        this.videoService.renderVideo(id, {
+            subtitleSettings: this.subtitleSettings(),
+            musicSettings: this.musicSettings()
+        }).subscribe(() => {
             // Status will update via socket to 'completed'
         });
     }
@@ -527,8 +529,8 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         // Pass the volume too, just in case init needs it (it does)
         this.playerService.initBackgroundMusic(url, settings.musicVolume ?? 15);
 
-        // Debounce backend call
-        this.musicSettingsSubject.next(settings);
+        // Debounce backend call - Clone to ensure distinctUntilChanged detects changes
+        this.musicSettingsSubject.next({ ...settings });
     }
 
     uploadMusic(file: File) {

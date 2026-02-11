@@ -36,27 +36,19 @@ export class MusicSettingsPanelComponent implements OnChanges {
         }
     }
 
-    toggleMusic(event: any) {
-        this.musicSettings.enableMusic = event.target.checked;
-        this.emitChange({ enableMusic: event.target.checked });
-    }
 
     updateVolume(type: 'voice' | 'music') {
         if (type === 'voice') {
-            this.musicSettings.voiceVolume = this.localVoiceVolume;
             this.emitChange({ voiceVolume: this.localVoiceVolume });
         } else {
-            this.musicSettings.musicVolume = this.localMusicVolume;
-            this.emitChange({ musicVolume: this.localMusicVolume });
+            this.emitChange({ voiceVolume: this.localVoiceVolume, musicVolume: this.localMusicVolume });
         }
     }
 
     updateFade(type: 'fadeIn' | 'fadeOut') {
         if (type === 'fadeIn') {
-            this.musicSettings.musicFadeIn = this.localMusicFadeIn;
             this.emitChange({ musicFadeIn: this.localMusicFadeIn });
         } else {
-            this.musicSettings.musicFadeOut = this.localMusicFadeOut;
             this.emitChange({ musicFadeOut: this.localMusicFadeOut });
         }
     }

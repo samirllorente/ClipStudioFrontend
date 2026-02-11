@@ -134,18 +134,17 @@ export class SubtitleEditorComponent implements OnChanges, OnDestroy {
         }
     }
 
+
     updateMusicSettings() {
         this.musicSettingsChange.emit(this.localMusicSettings);
     }
 
-    toggleMusicEnabled() {
-        this.localMusicSettings.enableMusic = !this.localMusicSettings.enableMusic;
-        this.updateMusicSettings();
-    }
-
     selectMusic(id: string | null) {
-        this.localMusicSettings.backgroundMusicId = id;
-        this.localMusicSettings.musicSource = 'library'; // switch to library source logic
+        this.localMusicSettings = {
+            ...this.localMusicSettings,
+            backgroundMusicId: id,
+            musicSource: 'library'
+        };
         this.updateMusicSettings();
     }
 
