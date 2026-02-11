@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environment';
 @Pipe({
     name: 'imageUrl',
     standalone: true,
-    pure: true
+    pure: false
 })
 export class ImageUrlPipe implements PipeTransform {
     transform(imagePath: string | null | undefined, projectId: string | null | undefined): string {
@@ -18,6 +18,6 @@ export class ImageUrlPipe implements PipeTransform {
         }
 
         const filename = imagePath.split('/').pop();
-        return `${environment.apiUrl}/projects/${projectId}/${filename}`;
+        return `${environment.apiUrl}/projects/${projectId}/${filename}?t=${Date.now()}`;
     }
 }
