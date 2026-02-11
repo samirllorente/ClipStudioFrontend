@@ -12,25 +12,8 @@
         </button>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex border-b border-slate-700">
-        <button (click)="activeTab = 'subtitles'"
-            class="flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2"
-            [class.text-indigo-400]="activeTab === 'subtitles'" [class.border-indigo-400]="activeTab === 'subtitles'"
-            [class.text-slate-400]="activeTab !== 'subtitles'" [class.border-transparent]="activeTab !== 'subtitles'"
-            [class.hover:text-slate-200]="activeTab !== 'subtitles'">
-            {{ 'SUBTITLES_TAB' | translate }}
-        </button>
-        <button (click)="activeTab = 'audio'"
-            class="flex-1 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2"
-            [class.text-indigo-400]="activeTab === 'audio'" [class.border-indigo-400]="activeTab === 'audio'"
-            [class.text-slate-400]="activeTab !== 'audio'" [class.border-transparent]="activeTab !== 'audio'"
-            [class.hover:text-slate-200]="activeTab !== 'audio'">
-            {{ 'AUDIO_TAB' | translate }}
-        </button>
-    </div>
-
-    <div class="p-6 space-y-8" *ngIf="activeTab === 'subtitles'">
+    <!-- Content -->
+    <div class="p-6 space-y-8">
 
         <!-- Live Preview -->
         <div class="space-y-2">
@@ -174,108 +157,6 @@
                 {{ 'RESET_SETTINGS' | translate }}
             </button>
         </div>
-    </div>
-
-    <!-- AUDIO TAB CONTENT -->
-    <div class="p-6 space-y-8" *ngIf="activeTab === 'audio'">
-
-        <!-- Voice Volume -->
-        <div class="space-y-2">
-            <div class="flex justify-between">
-                <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'VOICE_VOLUME' |
-                    translate }}</label>
-                <span class="text-xs text-white font-mono">{{ localMusicSettings.voiceVolume }}%</span>
-            </div>
-            <input type="range" min="0" max="200" [(ngModel)]="localMusicSettings.voiceVolume"
-                (ngModelChange)="updateMusicSettings()"
-                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
-        </div>
-
-
-        <!-- Music Volume -->
-        <div class="space-y-2">
-            <div class="flex justify-between">
-                <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'MUSIC_VOLUME' |
-                    translate }}</label>
-                <span class="text-xs text-white font-mono">{{ localMusicSettings.musicVolume }}%</span>
-            </div>
-            <input type="range" min="0" max="100" [(ngModel)]="localMusicSettings.musicVolume"
-                (ngModelChange)="updateMusicSettings()"
-                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
-        </div>
-
-        <!-- Background Music Selection -->
-        <div class="space-y-4">
-            <label class="text-xs text-slate-400 uppercase font-bold tracking-wider">{{ 'BACKGROUND_MUSIC' |
-                translate }}</label>
-
-            <div class="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                <!-- No Music Option -->
-                <label
-                    class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-500 cursor-pointer transition-colors"
-                    [class.border-indigo-500]="!localMusicSettings.backgroundMusicId">
-                    <input type=" radio" name="bgMusic" [value]="null" [checked]="!localMusicSettings.backgroundMusicId"
-                        (change)="selectMusic(null)"
-                        class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 focus:ring-indigo-500 cursor-pointer">
-                    <span class="text-sm font-medium">{{ 'NO_MUSIC' | translate }}</span>
-                </label>
-
-                <!-- Music Options -->
-                @for(music of musicList; track music._id) {
-                <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-500 transition-colors group relative"
-                    [class.border-indigo-500]="localMusicSettings.backgroundMusicId === music._id">
-
-                    <!-- Selection Radio -->
-                    <input type="radio" name="bgMusic" [value]="music._id"
-                        [checked]="localMusicSettings.backgroundMusicId === music._id" (change)="selectMusic(music._id)"
-                        class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 focus:ring-indigo-500 cursor-pointer shrink-0">
-
-                    <!-- Info -->
-                    <div class="flex-1 min-w-0" (click)="selectMusic(music._id)">
-                        <p class="text-sm font-medium truncate text-white cursor-pointer">{{ music.name }}</p>
-                        <p class="text-xs text-slate-400 truncate">{{ music.artist }}</p>
-                    </div>
-
-                    <!-- Preview Player Controls -->
-                    <button (click)="togglePreview(music, $event)"
-                        class="p-2 rounded-full bg-slate-700 hover:bg-slate-600 text-white transition-colors cursor-pointer shrink-0 z-10">
-                        @if(previewingMusicId === music._id && isPreviewPlaying) {
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-                        </svg>
-                        } @else {
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-                        </svg>
-                        }
-                    </button>
-                </div>
-                }
-            </div>
-
-            <!-- Upload Button -->
-            <button (click)="fileInput.click()"
-                class="flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 hover:border-slate-400 hover:text-white transition-colors cursor-pointer hover:bg-slate-800/50"
-                [class.bg-indigo-900]="localMusicSettings.musicSource === 'custom'"
-                [class.border-indigo-500]="localMusicSettings.musicSource === 'custom'">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-                <span class="text-sm font-medium">{{ 'UPLOAD_MUSIC' | translate }}</span>
-                <input #fileInput type="file" accept="audio/mp3,audio/*" class="hidden" (change)="handleUpload($event)">
-            </button>
-
-            <!-- Indicator if custom music is active -->
-            <div *ngIf="localMusicSettings.musicSource === 'custom'" class="text-xs text-indigo-400 text-center">
-                {{ 'CUSTOM_MUSIC_ACTIVE' | translate }}
-            </div>
-        </div>
-
     </div>
 </div>
 
