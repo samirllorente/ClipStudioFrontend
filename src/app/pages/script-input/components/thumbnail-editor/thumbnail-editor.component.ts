@@ -15,6 +15,7 @@ export class ThumbnailEditorComponent {
     @Input() thumbnailUrl: string | null = null;
     @Input() prompt: string = '';
     @Input() isLoading = false;
+    @Input() aspectRatio: string = '9:16';
     @Output() regenerate = new EventEmitter<string>();
     @Output() upload = new EventEmitter<File>();
 

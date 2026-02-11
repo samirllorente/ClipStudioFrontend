@@ -50,6 +50,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
     errorMessage = signal<string | null>(null);
     projectId = signal<string | null>(null);
     videoUrl = signal<string | null>(null);
+    projectAspectRatio = signal<string>('9:16');
 
     // Subtitle Settings State
     subtitleSettings = signal<any>({
@@ -190,11 +191,12 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         this.playerService.cleanup();
     }
 
-    handleScriptSubmit(script: string) {
+    handleScriptSubmit(formValue: { script: string, aspectRatio: string }) {
         this.isSubmitting.set(true);
         this.errorMessage.set(null);
+        this.projectAspectRatio.set(formValue.aspectRatio);
 
-        this.videoService.generateVideo(script)
+        this.videoService.generateVideo({ script: formValue.script, aspectRatio: formValue.aspectRatio })
             .pipe(
                 catchError((err) => {
                     console.error('Error generating video:', err);
@@ -248,6 +250,8 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                     const mergedSettings = { showSubtitles: true, ...project.subtitleSettings };
                     this.subtitleSettings.set(mergedSettings);
                 }
+
+                this.projectAspectRatio.set(project.aspectRatio || '9:16');
 
                 // Load music settings
                 const musicSettings = {
@@ -358,6 +362,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         this.processingStatus.set(VIDEO_CONSTANTS.STATUS.INPUT);
         this.projectId.set(null);
         this.videoUrl.set(null);
+        this.projectAspectRatio.set('9:16');
         this.playerService.reset();
         this.clearUrl();
     }
@@ -365,7 +370,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
     private getImageUrl(imagePath: string): string {
         if (!imagePath) return '';
         const filename = imagePath.split('/').pop();
-        return `${environment.apiUrl}/projects/${this.projectId()}/${filename}`;
+        return `${environment.apiUrl}/projects/${this.projectId()}/${filename}?t=${Date.now()}`;
     }
 
     private updatePreviewState(time: number) {
@@ -414,7 +419,8 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         this.processingStatus.set(VIDEO_CONSTANTS.STATUS.GENERATING);
         this.videoService.renderVideo(id, {
             subtitleSettings: this.subtitleSettings(),
-            musicSettings: this.musicSettings()
+            musicSettings: this.musicSettings(),
+            aspectRatio: this.projectAspectRatio()
         }).subscribe(() => {
             // Status will update via socket to 'completed'
         });

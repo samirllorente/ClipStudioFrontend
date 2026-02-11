@@ -15,9 +15,8 @@ export class VideoService {
     private musicUrl = `${environment.apiUrl}/music`;
     private apiUrl = `${environment.apiUrl}/scripts/process`;
 
-    generateVideo(script: string): Observable<VideoResponse> {
-        const payload: VideoScript = { script };
-        return this.http.post<VideoResponse>(this.apiUrl, payload);
+    generateVideo(data: VideoScript): Observable<VideoResponse> {
+        return this.http.post<VideoResponse>(this.apiUrl, data);
     }
 
     getProject(id: string): Observable<any> {

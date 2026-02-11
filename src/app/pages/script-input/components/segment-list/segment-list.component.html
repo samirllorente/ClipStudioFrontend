@@ -5,8 +5,10 @@
     @for (segment of projectData.segments; track segment.id; let i = $index) {
     <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row gap-6">
         <!-- Image Column -->
-        <div class="w-full md:w-2/5 flex flex-col gap-4">
-            <div class="relative aspect-[9/16] bg-black/50 rounded-xl overflow-hidden border border-slate-700">
+        <div class="w-full flex flex-col gap-4" [class.md:w-2/5]="aspectRatio === '9:16'"
+            [class.md:w-3/5]="aspectRatio === '16:9'">
+            <div class="relative bg-black/50 rounded-xl overflow-hidden border border-slate-700"
+                [class.aspect-[9/16]]="aspectRatio === '9:16'" [class.aspect-video]="aspectRatio === '16:9'">
                 <img [src]="segment.imagePath | imageUrl:projectId" class="w-full h-full object-cover">
             </div>
             <div class="flex flex-col gap-2">
@@ -37,7 +39,8 @@
         </div>
 
         <!-- Subtitles Column -->
-        <div class="w-full md:w-3/5 flex flex-col gap-4">
+        <div class="w-full flex flex-col gap-4" [class.md:w-3/5]="aspectRatio === '9:16'"
+            [class.md:w-2/5]="aspectRatio === '16:9'">
             <h3 class="text-lg font-semibold text-white">{{ 'SUBTITLES_HEADER' | translate }}</h3>
             <div class="grid grid-cols-1 gap-1">
                 @for (sub of getSegmentSubtitles(i); track $index) {

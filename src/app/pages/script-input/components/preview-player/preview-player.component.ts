@@ -18,6 +18,7 @@ export class PreviewPlayerComponent {
     @Input() showSubtitles = true;
     @Input() isPlaying = false;
     @Input() currentEffect = 'animate-intense-zoom';
+    @Input() aspectRatio = '9:16';
 
     @Output() togglePlay = new EventEmitter<void>();
     @Output() toggleSubtitles = new EventEmitter<boolean>();

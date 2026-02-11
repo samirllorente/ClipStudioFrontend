@@ -44,7 +44,7 @@
                 <app-preview-player [activeImage]="activeImage()" [previousImage]="previousImage()"
                     [activeSubtitle]="activeSubtitle()" [subtitleSettings]="subtitleSettings()"
                     [showSubtitles]="showSubtitles()" [isPlaying]="playerService.isPlaying()"
-                    [currentEffect]="currentEffect()" (togglePlay)="togglePlay()"
+                    [currentEffect]="currentEffect()" [aspectRatio]="projectAspectRatio()" (togglePlay)="togglePlay()"
                     (toggleSubtitles)="toggleSubtitles($event)">
                 </app-preview-player>
 
@@ -57,12 +57,12 @@
                 </app-music-settings-panel>
 
                 <app-thumbnail-editor [thumbnailUrl]="thumbnailUrl()" [prompt]="thumbnailPrompt()"
-                    [isLoading]="isThumbnailLoading()" (regenerate)="regenerateThumbnail($event)"
-                    (upload)="uploadThumbnail($event)">
+                    [isLoading]="isThumbnailLoading()" [aspectRatio]="projectAspectRatio()"
+                    (regenerate)="regenerateThumbnail($event)" (upload)="uploadThumbnail($event)">
                 </app-thumbnail-editor>
 
                 <app-segment-list [projectData]="projectData()" [projectId]="projectId()"
-                    [subtitleSettings]="subtitleSettings()"
+                    [subtitleSettings]="subtitleSettings()" [aspectRatio]="projectAspectRatio()"
                     (regenerateImage)="regenerateImage($event.index, $event.prompt)"
                     (uploadImage)="uploadImage($event.index, $event.file)" (updateSubtitle)="updateSubtitle()">
                 </app-segment-list>
@@ -78,7 +78,7 @@
             }
 
             @else if (processingStatus() === 'completed') {
-            <app-video-result [videoUrl]="videoUrl()" (onBack)="resetForm()">
+            <app-video-result [videoUrl]="videoUrl()" [aspectRatio]="projectAspectRatio()" (onBack)="resetForm()">
             </app-video-result>
             }
         </div>

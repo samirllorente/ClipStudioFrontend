@@ -18,6 +18,7 @@ export class SegmentListComponent {
     @Input() projectData: any;
     @Input() projectId: string | null = null;
     @Input() subtitleSettings: any = {};
+    @Input() aspectRatio: string = '9:16';
 
     // @Output() openSubtitleEditor = new EventEmitter<void>(); // Moved to parent
     @Output() regenerateImage = new EventEmitter<{ index: number, prompt: string }>();

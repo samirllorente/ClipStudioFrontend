@@ -12,6 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class VideoResultComponent {
   @Input() videoUrl: string | null = null;
+  @Input() aspectRatio: string = '9:16';
   @Output() onBack = new EventEmitter<void>();
 
   async downloadVideo(event: Event) {

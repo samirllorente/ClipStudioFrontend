@@ -14,12 +14,13 @@ import { TranslateModule } from '@ngx-translate/core';
 export class ScriptFormComponent {
   @Input() isSubmitting = false;
   @Input() errorMessage: string | null = null;
-  @Output() formSubmit = new EventEmitter<string>();
+  @Output() formSubmit = new EventEmitter<any>();
 
   private fb = inject(FormBuilder);
 
   scriptForm: FormGroup = this.fb.group({
     script: ['', [Validators.required, Validators.minLength(10)]],
+    aspectRatio: ['9:16', [Validators.required]]
   });
 
   get scriptControl() {
@@ -28,7 +29,7 @@ export class ScriptFormComponent {
 
   onSubmit() {
     if (this.scriptForm.valid) {
-      this.formSubmit.emit(this.scriptForm.value.script);
+      this.formSubmit.emit(this.scriptForm.value);
     } else {
       this.scriptForm.markAllAsTouched();
     }

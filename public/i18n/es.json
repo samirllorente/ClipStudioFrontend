@@ -3,6 +3,7 @@
     "VIDEO_CREATOR": "Creador de Videos",
     "SUBTITLE": "Convierte tu texto en videos atractivos al instante.",
     "VIDEO_SCRIPT_LABEL": "Guion del Video",
+    "ASPECT_RATIO_LABEL": "Formato del Video",
     "PLACEHOLDER": "Pega tu guion aquí... ej: 'En este video, exploraremos las maravillas del océano profundo...'",
     "ERROR_REQUIRED": "Por favor ingresa un guion para continuar.",
     "PROCESSING": "Procesando...",

@@ -1,5 +1,8 @@
 <div class="flex flex-col items-center w-full">
-    <video *ngIf="videoUrl" controls autoplay class="w-full max-h-[80vh] rounded-xl shadow-lg border border-slate-700">
+    <video *ngIf="videoUrl" controls autoplay [class.aspect-[9/16]]="aspectRatio === '9:16'"
+        [class.aspect-video]="aspectRatio === '16:9'" [class.max-w-md]="aspectRatio === '9:16'"
+        [class.max-w-3xl]="aspectRatio === '16:9'"
+        class="w-full max-h-[80vh] rounded-xl shadow-lg border border-slate-700 bg-black">
         <source [src]="videoUrl" type="video/mp4">
         Your browser does not support the video tag.
     </video>

@@ -1,5 +1,6 @@
 export interface VideoScript {
     script: string;
+    aspectRatio?: string;
 }
 
 export interface VideoResponse {

@@ -3,6 +3,7 @@
     "VIDEO_CREATOR": "Video Creator",
     "SUBTITLE": "Turn your text into engaging videos instantly.",
     "VIDEO_SCRIPT_LABEL": "Video Script",
+    "ASPECT_RATIO_LABEL": "Video Format",
     "PLACEHOLDER": "Paste your script here... e.g. 'In this video, we will explore the wonders of the deep ocean...'",
     "ERROR_REQUIRED": "Please enter a script to proceed.",
     "PROCESSING": "Processing...",
