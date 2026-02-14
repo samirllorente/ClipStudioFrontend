@@ -147,6 +147,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                 // Set initial status based on project status
                 if (project.status === 'completed') {
                     this.videoUrl.set(`${environment.apiUrl}/projects/${projectId}/final_video.mp4`);
+                    this.projectAspectRatio.set(project.aspectRatio || '9:16');
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.COMPLETED);
                 } else if (project.status === 'draft_ready' || project.status === 'generating_video') { // Treat generating as preview mode so user can see progress/result eventually
                     // If it was generating, we might want to show spinner, but let's default to preview layout
