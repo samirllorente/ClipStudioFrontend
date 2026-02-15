@@ -111,11 +111,22 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.loadMusicList();
+
+        // Check for Route Param (edit/:id)
+        this.route.params.subscribe(params => {
+            const id = params['id'];
+            if (id) {
+                this.projectId.set(id);
+                this.loadProjectState(id);
+            }
+        });
+
+        // Check for Query Param (?id=...) - e.g. from redirect or create page resume
         this.route.queryParams.subscribe(params => {
-            const projectId = params['id'];
-            if (projectId) {
-                this.projectId.set(projectId);
-                this.loadProjectState(projectId);
+            const id = params['id'];
+            if (id) {
+                this.projectId.set(id);
+                this.loadProjectState(id);
             }
         });
 
@@ -149,12 +160,12 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                     this.videoUrl.set(`${environment.apiUrl}/projects/${projectId}/final_video.mp4`);
                     this.projectAspectRatio.set(project.aspectRatio || '9:16');
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.COMPLETED);
-                } else if (project.status === 'draft_ready' || project.status === 'generating_video') { // Treat generating as preview mode so user can see progress/result eventually
-                    // If it was generating, we might want to show spinner, but let's default to preview layout
-                    // and let socket status update it if needed.
+                } else if (project.status === 'draft_ready') {
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PREVIEW);
                     this.projectData.set(project);
-                    this.loadProjectPreview(projectId); // This sets up player etc
+                    this.loadProjectPreview(projectId);
+                } else if (project.status === 'generating_video') {
+                    this.processingStatus.set(VIDEO_CONSTANTS.STATUS.GENERATING);
                 } else if (project.status === 'processing' || project.status === 'pending') {
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PROCESSING);
                 } else if (project.status === 'failed') {
@@ -385,7 +396,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         this.videoUrl.set(null);
         this.projectAspectRatio.set('9:16');
         this.playerService.reset();
-        this.clearUrl();
+        this.router.navigate(['/dashboard']);
     }
 
     private getImageUrl(imagePath: string): string {
