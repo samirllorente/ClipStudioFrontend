@@ -345,6 +345,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         this.videoService.regenerateImage(id, segmentIndex, newPrompt).subscribe((updatedProject) => {
             if (updatedProject) {
                 this.projectData.set(updatedProject);
+                this.updateActiveImageIfCurrent(updatedProject, segmentIndex);
             }
         });
     }
