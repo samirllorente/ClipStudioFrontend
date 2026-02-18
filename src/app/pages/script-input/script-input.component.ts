@@ -159,6 +159,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
                 if (project.status === 'completed') {
                     this.videoUrl.set(`${environment.apiUrl}/projects/${projectId}/final_video.mp4`);
                     this.projectAspectRatio.set(project.aspectRatio || '9:16');
+                    this.projectData.set(project);
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.COMPLETED);
                 } else if (project.status === 'draft_ready') {
                     this.processingStatus.set(VIDEO_CONSTANTS.STATUS.PREVIEW);

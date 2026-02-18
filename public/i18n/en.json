@@ -1,4 +1,9 @@
 {
+    "VIDEO_DETAILS_AND_PUBLISH": "Video Details & Publishing",
+    "COPY_TITLE": "Copy Title",
+    "COPY_DESC": "Copy Description",
+    "COPIED_SUCCESS": "Copied to clipboard!",
+    "COPIED_ERROR": "Failed to copy to clipboard",
     "WELCOME": "Welcome to Clip Studio",
     "VIDEO_CREATOR": "Video Creator",
     "SUBTITLE": "Turn your text into engaging videos instantly.",

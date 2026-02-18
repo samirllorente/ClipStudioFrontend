@@ -1,4 +1,9 @@
 {
+    "VIDEO_DETAILS_AND_PUBLISH": "Detalles del Video y Publicación",
+    "COPY_TITLE": "Copiar Título",
+    "COPY_DESC": "Copiar Descripción",
+    "COPIED_SUCCESS": "¡Copiado al portapapeles!",
+    "COPIED_ERROR": "Error al copiar al portapapeles",
     "WELCOME": "Bienvenido a Clip Studio",
     "VIDEO_CREATOR": "Creador de Videos",
     "SUBTITLE": "Convierte tu texto en videos atractivos al instante.",

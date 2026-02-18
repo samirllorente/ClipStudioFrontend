@@ -27,7 +27,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
             </svg>
-            {{ 'SCHEDULE_PUBLISH_TITLE' | translate }}
+            {{ 'VIDEO_DETAILS_AND_PUBLISH' | translate }}
         </h3>
 
         @if(scheduleSuccess()) {
@@ -41,16 +41,38 @@
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-1">{{ 'PUBLISH_TITLE_LABEL' | translate
                     }}</label>
-                <input type="text" formControlName="title"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <div class="flex gap-2">
+                    <input type="text" formControlName="title"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-lg">
+                    <button type="button" (click)="copyToClipboard(scheduleForm.get('title')?.value)"
+                        class="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-200 transition-colors cursor-pointer"
+                        [title]="'COPY_TITLE' | translate">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Description -->
             <div>
                 <label class="block text-sm font-medium text-slate-300 mb-1">{{ 'PUBLISH_DESC_LABEL' | translate
                     }}</label>
-                <textarea formControlName="description" rows="3"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                <div class="flex gap-2">
+                    <textarea formControlName="description" rows="5"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"></textarea>
+                    <button type="button" (click)="copyToClipboard(scheduleForm.get('description')?.value)"
+                        class="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-200 transition-colors h-fit cursor-pointer"
+                        [title]="'COPY_DESC' | translate">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Date -->

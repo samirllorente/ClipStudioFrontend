@@ -5,6 +5,8 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } fr
 import { RouterLink } from '@angular/router';
 import { SocialService, SocialAccount } from '../../../../core/services/social.service';
 import { VideoService } from '../../../../core/services/video.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-video-result',
@@ -18,10 +20,14 @@ export class VideoResultComponent implements OnInit {
   @Input() videoUrl: string | null = null;
   @Input() projectId: string | null = null;
   @Input() aspectRatio: string = '9:16';
+  @Input() initialTitle: string | undefined = '';
+  @Input() initialDescription: string | undefined = '';
   @Output() onBack = new EventEmitter<void>();
 
   private socialService = inject(SocialService);
   private videoService = inject(VideoService);
+  private toastService = inject(ToastService);
+  private translate = inject(TranslateService);
   private fb = inject(FormBuilder);
 
   accounts = signal<SocialAccount[]>([]);
@@ -37,6 +43,12 @@ export class VideoResultComponent implements OnInit {
 
   ngOnInit() {
     this.loadAccounts();
+    if (this.initialTitle) {
+      this.scheduleForm.patchValue({ title: this.initialTitle });
+    }
+    if (this.initialDescription) {
+      this.scheduleForm.patchValue({ description: this.initialDescription });
+    }
   }
 
   loadAccounts() {
@@ -84,7 +96,7 @@ export class VideoResultComponent implements OnInit {
       error: (err) => {
         console.error('Publishing failed', err);
         this.isScheduling.set(false);
-        alert('Failed to schedule publishing');
+        this.toastService.show('Failed to schedule publishing', 'error');
       }
     });
   }
@@ -112,5 +124,15 @@ export class VideoResultComponent implements OnInit {
       // Fallback: just open in new tab if blob fetch fails (e.g. CORS issues)
       window.open(this.videoUrl, '_blank');
     }
+  }
+
+  copyToClipboard(text: string) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      this.toastService.show(this.translate.instant('COPIED_SUCCESS'), 'success');
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      this.toastService.show(this.translate.instant('COPIED_ERROR'), 'error');
+    });
   }
 }
