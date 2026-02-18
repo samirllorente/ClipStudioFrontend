@@ -18,6 +18,15 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'terms',
+        loadComponent: () => import('./pages/legal/terms-of-service/terms-of-service.component').then(m => m.TermsOfServiceComponent)
+    },
+    {
+        path: 'privacy',
+        loadComponent: () => import('./pages/legal/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent)
+    },
+
+    {
         path: 'dashboard',
         component: DashboardLayoutComponent,
         canActivate: [authGuard],

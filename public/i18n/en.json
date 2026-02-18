@@ -78,5 +78,63 @@
     "PUBLISH_DESC_LABEL": "Description / Hashtags",
     "PUBLISH_DATE_LABEL": "Publish Date & Time",
     "SELECT_ACCOUNTS_LABEL": "Select Accounts to Post to",
-    "SCHEDULE_PUBLISH_BUTTON": "Schedule Publish"
+    "SCHEDULE_PUBLISH_BUTTON": "Schedule Publish",
+    "TERMS": {
+        "TITLE": "Terms of Service",
+        "BACK": "Back to Home",
+        "INTRO": {
+            "TITLE": "1. Introduction",
+            "TEXT": "Welcome to Clip Studio. By using our website and services, you agree to these Terms of Service. Please read them carefully."
+        },
+        "LICENSE": {
+            "TITLE": "2. License to Use",
+            "TEXT": "We grant you a limited, non-exclusive, non-transferable license to use our video generation services for your personal or commercial projects, subject to these terms and compliance with applicable laws."
+        },
+        "RESPONSIBILITIES": {
+            "TITLE": "3. User Responsibilities",
+            "TEXT": "You are responsible for the content you generate and publish using our tools. You agree not to use our services to generate illegal, hateful, harmful, or otherwise objectionable content. We reserve the right to remove any content that violates these terms."
+        },
+        "IP": {
+            "TITLE": "4. Intellectual Property",
+            "TEXT": "You retain ownership of the content you generate, subject to the rights of third parties (e.g., stock media providers). We retain all rights to our software, trademarks, and service."
+        },
+        "TERMINATION": {
+            "TITLE": "5. Termination",
+            "TEXT": "We reserve the right to suspend or terminate your access to our services at our sole discretion, without notice, for conduct that we believe violates these Terms of Service or is harmful to other users of our services, us, or third parties."
+        },
+        "CHANGES": {
+            "TITLE": "6. Changes to Terms",
+            "TEXT": "We may modify these Terms at any time. We will notify users of any significant changes via email or strict notification on our platform."
+        },
+        "LAST_UPDATED": "Last updated: "
+    },
+    "PRIVACY": {
+        "TITLE": "Privacy Policy",
+        "BACK": "Back to Home",
+        "INFO_COLLECT": {
+            "TITLE": "1. Information We Collect",
+            "TEXT": "We collect information you provide directly to us, such as when you create an account, generate videos, purchase a subscription, or contact us for support. This includes your email address, name, and payment information."
+        },
+        "USE_INFO": {
+            "TITLE": "2. How We Use Your Information",
+            "TEXT": "We use your information to provide, maintain, and improve our services, including generating videos, processing transactions, and sending you technical notices and support messages."
+        },
+        "SHARING": {
+            "TITLE": "3. Data Sharing",
+            "TEXT": "We do not share your personal information with third parties except as described in this policy, such as with vendors who need access to such information to carry out work on our behalf (e.g., AI model providers, cloud hosting, payment processors)."
+        },
+        "COOKIES": {
+            "TITLE": "4. Cookies and Tracking",
+            "TEXT": "We use cookies and similar technologies to collect information about your activity on our services to improve your user experience and analyze our traffic."
+        },
+        "SECURITY": {
+            "TITLE": "5. Security",
+            "TEXT": "We take reasonable measures to help protect information about you from loss, theft, misuse, unauthorized access, disclosure, alteration, and destruction."
+        },
+        "CONTACT": {
+            "TITLE": "6. Contact Us",
+            "TEXT": "If you have any questions about this Privacy Policy, please contact us at support@clipstudio.co."
+        },
+        "LAST_UPDATED": "Last updated: "
+    }
 }

@@ -1,18 +1,19 @@
-
 import { Component, inject, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { FooterComponent } from '../../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslateModule, FooterComponent],
   template: `
     <div class="h-screen flex overflow-hidden bg-gray-900">
       <!-- Sidebar -->
       <div class="hidden md:flex md:flex-shrink-0">
         <div class="flex flex-col w-64">
+           <!-- ... Keep existing sidebar ... -->
           <div class="flex flex-col h-0 flex-1 bg-gray-800 border-r border-gray-700">
             <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
               <div class="flex items-center flex-shrink-0 px-4">
@@ -64,9 +65,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       <!-- Main content -->
       <div class="flex flex-col w-0 flex-1 overflow-hidden">
         <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none">
-          <div class="py-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div class="py-6 min-h-full flex flex-col">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex-1 w-full">
               <router-outlet></router-outlet>
+            </div>
+            <div class="mt-auto">
+               <app-footer />
             </div>
           </div>
         </main>

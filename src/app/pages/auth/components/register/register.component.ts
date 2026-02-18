@@ -1,16 +1,16 @@
-
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule, FooterComponent],
   template: `
-    <div class="flex min-h-screen items-center justify-center bg-gray-900 p-4">
+    <div class="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-4">
       <div class="w-full max-w-md space-y-8 rounded-lg bg-gray-800 p-8 shadow-lg">
         <div>
           <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-white">{{ 'REGISTER_TITLE' | translate }}</h2>
@@ -78,6 +78,7 @@ import { TranslateModule } from '@ngx-translate/core';
           </div>
         </form>
       </div>
+      <app-footer class="mt-8" />
     </div>
   `
 })

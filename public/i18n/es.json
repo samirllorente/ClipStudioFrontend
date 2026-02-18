@@ -106,5 +106,63 @@
     "PUBLISH_DESC_LABEL": "Descripción / Hashtags",
     "PUBLISH_DATE_LABEL": "Fecha y Hora de Publicación",
     "SELECT_ACCOUNTS_LABEL": "Seleccionar Cuentas para Publicar",
-    "SCHEDULE_PUBLISH_BUTTON": "Programar Publicación"
+    "SCHEDULE_PUBLISH_BUTTON": "Programar Publicación",
+    "TERMS": {
+        "TITLE": "Términos de Servicio",
+        "BACK": "Volver al Inicio",
+        "INTRO": {
+            "TITLE": "1. Introducción",
+            "TEXT": "Bienvenido a Clip Studio. Al usar nuestro sitio web y servicios, aceptas estos Términos de Servicio. Por favor léelos cuidadosamente."
+        },
+        "LICENSE": {
+            "TITLE": "2. Licencia de Uso",
+            "TEXT": "Te otorgamos una licencia limitada, no exclusiva e intransferible para usar nuestros servicios de generación de video para tus proyectos personales o comerciales, sujeto a estos términos y cumplimiento de las leyes aplicables."
+        },
+        "RESPONSIBILITIES": {
+            "TITLE": "3. Responsabilidades del Usuario",
+            "TEXT": "Eres responsable del contenido que generas y publicas usando nuestras herramientas. Aceptas no usar nuestros servicios para generar contenido ilegal, odioso, dañino u objetable. Nos reservamos el derecho de eliminar cualquier contenido que viole estos términos."
+        },
+        "IP": {
+            "TITLE": "4. Propiedad Intelectual",
+            "TEXT": "Conservas la propiedad del contenido que generas, sujeto a los derechos de terceros (ej. proveedores de medios). Conservamos todos los derechos de nuestro software, marcas registradas y servicio."
+        },
+        "TERMINATION": {
+            "TITLE": "5. Terminación",
+            "TEXT": "Nos reservamos el derecho de suspender o terminar tu acceso a nuestros servicios a nuestra sola discreción, sin aviso previo, por conducta que creemos viola estos Términos de Servicio o es dañina para otros usuarios, nosotros o terceros."
+        },
+        "CHANGES": {
+            "TITLE": "6. Cambios a los Términos",
+            "TEXT": "Podemos modificar estos Términos en cualquier momento. Notificaremos a los usuarios de cualquier cambio significativo vía correo electrónico o notificación en nuestra plataforma."
+        },
+        "LAST_UPDATED": "Última actualización: "
+    },
+    "PRIVACY": {
+        "TITLE": "Política de Privacidad",
+        "BACK": "Volver al Inicio",
+        "INFO_COLLECT": {
+            "TITLE": "1. Información que Recopilamos",
+            "TEXT": "Recopilamos información que nos proporcionas directamente, como cuando creas una cuenta, generas videos, compras una suscripción o nos contactas. Esto incluye tu correo, nombre e información de pago."
+        },
+        "USE_INFO": {
+            "TITLE": "2. Cómo Usamos tu Información",
+            "TEXT": "Usamos tu información para proveer, mantener y mejorar nuestros servicios, incluyendo generar videos, procesar transacciones y enviarte avisos técnicos y mensajes de soporte."
+        },
+        "SHARING": {
+            "TITLE": "3. Compartir Datos",
+            "TEXT": "No compartimos tu información personal con terceros excepto como se describe en esta política, como con proveedores que necesitan acceso para realizar trabajo en nuestro nombre (ej. modelos de IA, hosting, procesadores de pago)."
+        },
+        "COOKIES": {
+            "TITLE": "4. Cookies y Rastreo",
+            "TEXT": "Usamos cookies y tecnologías similares para recopilar información sobre tu actividad en nuestros servicios para mejorar tu experiencia y analizar nuestro tráfico."
+        },
+        "SECURITY": {
+            "TITLE": "5. Seguridad",
+            "TEXT": "Tomamos medidas razonables para ayudar a proteger tu información contra pérdida, robo, mal uso, acceso no autorizado, divulgación, alteración y destrucción."
+        },
+        "CONTACT": {
+            "TITLE": "6. Contáctanos",
+            "TEXT": "Si tienes preguntas sobre esta Política de Privacidad, contáctanos en support@clipstudio.co."
+        },
+        "LAST_UPDATED": "Última actualización: "
+    }
 }
