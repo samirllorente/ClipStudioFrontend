@@ -24,6 +24,7 @@ export const routes: Routes = [
         children: [
             { path: '', redirectTo: 'videos', pathMatch: 'full' },
             { path: 'videos', loadComponent: () => import('./pages/dashboard/components/video-list/video-list.component').then(m => m.VideoListComponent) },
+            { path: 'social', loadComponent: () => import('./pages/dashboard/components/social-config/social-config').then(m => m.SocialConfigComponent) },
             { path: 'create', loadComponent: () => import('./pages/script-input/script-input.component').then(m => m.ScriptInputComponent) },
             { path: 'edit/:id', loadComponent: () => import('./pages/script-input/script-input.component').then(m => m.ScriptInputComponent) }
         ]

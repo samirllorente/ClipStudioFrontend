@@ -110,7 +110,8 @@
             }
 
             @else if (processingStatus() === 'completed') {
-            <app-video-result [videoUrl]="videoUrl()" [aspectRatio]="projectAspectRatio()" (onBack)="resetForm()">
+            <app-video-result [videoUrl]="videoUrl()" [projectId]="projectId()" [aspectRatio]="projectAspectRatio()"
+                (onBack)="resetForm()">
             </app-video-result>
             }
         </div>

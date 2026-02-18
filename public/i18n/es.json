@@ -91,5 +91,20 @@
     "TABLE_ACTIONS": "Acciones",
     "ACTION_EDIT": "Editar",
     "ACTION_VIEW": "Ver",
-    "NO_PROJECTS_FOUND": "No se encontraron proyectos. ¡Crea uno para empezar!"
+    "NO_PROJECTS_FOUND": "No se encontraron proyectos. ¡Crea uno para empezar!",
+    "SOCIAL_SETTINGS_TITLE": "Configuración de Redes Sociales",
+    "SOCIAL_SETTINGS_DESC": "Conecta tus cuentas sociales para programar publicaciones directamente desde el panel.",
+    "CONNECTED_ACCOUNTS": "Cuentas Conectadas",
+    "DISCONNECT": "Desconectar",
+    "NO_ACCOUNTS_CONNECTED": "Aún no hay cuentas conectadas.",
+    "DASHBOARD_SOCIAL_CONFIG": "Configurar Redes",
+    "CONFIGURE_NOW": "Configurar Ahora",
+    "NO_ACCOUNTS_LINKED_MSG": "No hay cuentas vinculadas. Configúralas aquí.",
+    "SCHEDULE_PUBLISH_TITLE": "Programar Publicación",
+    "SCHEDULE_SUCCESS_MSG": "¡Publicación programada exitosamente!",
+    "PUBLISH_TITLE_LABEL": "Título / Pie de foto",
+    "PUBLISH_DESC_LABEL": "Descripción / Hashtags",
+    "PUBLISH_DATE_LABEL": "Fecha y Hora de Publicación",
+    "SELECT_ACCOUNTS_LABEL": "Seleccionar Cuentas para Publicar",
+    "SCHEDULE_PUBLISH_BUTTON": "Programar Publicación"
 }

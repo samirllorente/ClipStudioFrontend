@@ -78,4 +78,7 @@ export class VideoService {
     resumeGeneration(id: string): Observable<any> {
         return this.http.post<any>(`${environment.apiUrl}/scripts/resume/${id}`, {});
     }
+    publish(id: string, options: any): Observable<any> {
+        return this.http.post<any>(`${this.projectsUrl}/${id}/publish`, options);
+    }
 }

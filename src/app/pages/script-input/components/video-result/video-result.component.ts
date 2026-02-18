@@ -1,19 +1,93 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { SocialService, SocialAccount } from '../../../../core/services/social.service';
+import { VideoService } from '../../../../core/services/video.service';
 
 @Component({
   selector: 'app-video-result',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, ReactiveFormsModule, RouterLink],
   templateUrl: './video-result.component.html',
   styleUrl: './video-result.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class VideoResultComponent {
+export class VideoResultComponent implements OnInit {
   @Input() videoUrl: string | null = null;
+  @Input() projectId: string | null = null;
   @Input() aspectRatio: string = '9:16';
   @Output() onBack = new EventEmitter<void>();
+
+  private socialService = inject(SocialService);
+  private videoService = inject(VideoService);
+  private fb = inject(FormBuilder);
+
+  accounts = signal<SocialAccount[]>([]);
+  isScheduling = signal(false);
+  scheduleSuccess = signal(false);
+
+  scheduleForm: FormGroup = this.fb.group({
+    title: ['', Validators.required],
+    description: [''],
+    publishDate: ['', Validators.required],
+    selectedAccounts: this.fb.array([]) // Will hold account IDs
+  });
+
+  ngOnInit() {
+    this.loadAccounts();
+  }
+
+  loadAccounts() {
+    this.socialService.getAccounts().subscribe(accounts => {
+      this.accounts.set(accounts);
+    });
+  }
+
+  isAccountSelected(accountId: string): boolean {
+    const formArray = this.scheduleForm.get('selectedAccounts') as FormArray;
+    return formArray.value.includes(accountId);
+  }
+
+  toggleAccountSelection(accountId: string, event: any) {
+    const formArray = this.scheduleForm.get('selectedAccounts') as FormArray;
+    if (event.target.checked) {
+      formArray.push(this.fb.control(accountId));
+    } else {
+      const index = formArray.controls.findIndex(x => x.value === accountId);
+      if (index !== -1) {
+        formArray.removeAt(index);
+      }
+    }
+  }
+
+  async schedulePublish() {
+    if (this.scheduleForm.invalid || !this.projectId) return;
+
+    this.isScheduling.set(true);
+    const formValue = this.scheduleForm.value;
+
+    const payload = {
+      title: formValue.title,
+      description: formValue.description,
+      publishDate: formValue.publishDate,
+      accounts: formValue.selectedAccounts
+    };
+
+    this.videoService.publish(this.projectId, payload).subscribe({
+      next: () => {
+        this.isScheduling.set(false);
+        this.scheduleSuccess.set(true);
+        setTimeout(() => this.scheduleSuccess.set(false), 3000); // Reset success message
+      },
+      error: (err) => {
+        console.error('Publishing failed', err);
+        this.isScheduling.set(false);
+        alert('Failed to schedule publishing');
+      }
+    });
+  }
 
   async downloadVideo(event: Event) {
     event.preventDefault();
