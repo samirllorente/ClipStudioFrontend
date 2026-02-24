@@ -8,7 +8,7 @@ RUN npm ci
 
 # Luego copiamos el resto y construimos
 COPY . .
-RUN npm run build
+RUN npm run build:prod
 
 # Nginx para servir la SPA
 FROM nginx:alpine
