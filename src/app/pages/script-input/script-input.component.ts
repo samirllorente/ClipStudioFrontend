@@ -74,7 +74,7 @@ export class ScriptInputComponent implements OnDestroy, OnInit {
         enableMusic: true,
         musicSource: 'library',
         musicFadeIn: 0,
-        musicFadeOut: 0
+        musicFadeOut: 2
     });
 
     private musicSettingsSubject = new Subject<any>();
