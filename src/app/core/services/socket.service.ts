@@ -11,7 +11,7 @@ export class SocketService {
     private socket: Socket;
 
     constructor() {
-        this.socket = io(environment.wsUrl);
+        this.socket = io(environment.apiUrl);
     }
 
     joinProject(projectId: string) {

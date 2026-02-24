@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-video-list',
@@ -94,11 +95,11 @@ export class VideoListComponent implements OnInit {
   projects = signal<any[]>([]);
 
   getVideoUrl(projectId: string): string {
-    return `http://localhost:3000/projects/${projectId}/final_video.mp4`;
+    return `${environment.apiUrl}/projects/${projectId}/final_video.mp4`;
   }
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:3000/projects').subscribe(data => {
+    this.http.get<any[]>(`${environment.apiUrl}/projects`).subscribe(data => {
       this.projects.set(data);
     });
   }

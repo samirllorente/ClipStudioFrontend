@@ -4,13 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private http = inject(HttpClient);
     private router = inject(Router);
     private tokenKey = 'auth_token';
-    private apiUrl = 'http://localhost:3000/auth'; // Hardcoded for now
+    private apiUrl = `${environment.apiUrl}/auth`;
 
     // User Signal
     currentUser = signal<any>(null);
